@@ -15,7 +15,7 @@ my @users  = $schema->resultset('User')->populate(
 			email      => 'admin@example.com',
 			first_name => 'System',
 			last_name  => 'Admin',
-			password   => '{SSHA}ISN50JK4biecQNndthC2/+V3KKf3zF/d',
+			password   => '{SSHA}MgjsrRjnD6gUCh+ilS0rnNeCzA5uQ71d',
 			is_admin   => 1,
 		},
 	]
@@ -61,7 +61,7 @@ my @schools = $schema->resultset('School')->populate(
 								email      => $_->{email} . '@example.com',
 								first_name => $_->{school},
 								last_name  => 'Team',
-								password   => '{SSHA}ISN50JK4biecQNndthC2/+V3KKf3zF/d',
+								password   => '{SSHA}MgjsrRjnD6gUCh+ilS0rnNeCzA5uQ71d',
 							}
 						]
 					}
@@ -574,6 +574,7 @@ foreach my $practice (@questions) {
 		question_id  => $practice->id,
 		round_number => 0,
 		sequence     => 0,
+		create_user_id => 0,
 	  };
 }
 
@@ -587,7 +588,8 @@ foreach my $i ( 0 .. 7 ) {
 		  {
 			question_id  => $qid,
 			round_number => $round,
-			sequence     => $seq++
+			sequence     => $seq++,
+			create_user_id => 0,
 		  };
 	}
 
@@ -600,24 +602,25 @@ foreach my $i ( 0 .. 7 ) {
 		  {
 			question_id  => $qid,
 			round_number => $round,
-			sequence     => $seq++
+			sequence     => $seq++,
+			create_user_id => 0,
 		  };
 	}
 
 	$round++;
 }
 
-my $event = $schema->resultset('Event')->populate(
+my ($event) = $schema->resultset('Event')->populate(
 	[
 		{
 			name             => 'GMLSAL Quiz Bowl 2011',
 			start_time       => \'now()',
 			end_time         => \"now() + INTERVAL '1 hour'",
-			questions        => \@event_questions,
 			registered_teams => [ map { { team_id => $_->team_id, } } $schema->resultset('Team')->all() ],
 		}
 	]
 );
+$event->questions->populate(\@event_questions);
 
 my @screens = $schema->resultset('Slide')->populate(
 	[
