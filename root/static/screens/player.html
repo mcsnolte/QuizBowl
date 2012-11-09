@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link href="/css/style.css" rel="stylesheet">
+		<style type="text/css">
+			body {
+			    margin: 0;
+			    padding: 0;
+			    background-color: #000;
+			    font-size: 100%;
+			    font-family: Arial;
+			}
+			
+			div#header {
+			    position: relative;
+			    height: 6em;
+			    background-color: #ccc;
+			    padding: 1em;
+			}
+			div#header h1 {
+			    margin: 0;
+			}
+			div#header div#event_info {
+				width: 25%;
+				float: left;
+			}
+			div#header div#round_info {
+				width: 50%;
+				float: left;
+				margin: 0 auto;
+				text-align: center;
+			}
+			div#header div#team_info {
+				width: 25%;
+				float: right;
+				text-align: right;
+			}
+			div#question {
+			    clear: all;
+			    background-color: #fff;
+			    position: relative;
+			    text-align: center;
+			    font-size: 2em;
+			    padding: 2em;
+			}
+			strong#question_label {
+				color: #ccc;
+				position: absolute;
+				font-size: 2em;
+				font-style: italic;
+				top: 0;
+				left: 0;
+			}
+			div#question pre#visual {
+			    font-size: .8em;
+			    width: 5em;
+			    float: right;
+			    margin: 0;
+			    padding: 0 3em;
+			}
+			div#answer {
+			    clear: all;
+				position: relative;
+			    color: #fff;
+			    text-align: center;
+			    font-size: 2em;
+			    padding: 1em;
+			}
+			strong#answer_label {
+				color: #333;
+				position: absolute;
+				font-size: 2em;
+				font-style: italic;
+				top: 0;
+				left: 0;
+			}
+			div#answer input {
+			    font-size: 1.8em;
+			    padding: 0;
+			    text-align: center;
+			}
+			div#answer button {
+			    font-size: 1.25em;
+			    height: 2em;
+			    width: 10em;
+				margin: 1em;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="header">
+			<div id="event_info">
+				<h1>GMLSAL</h1>
+				<h2>Math Bowl 2011</h2>
+			</div>
+			<div id="round_info">
+				<h1>Round 4</h1>
+				<h2>
+					5<sup>th</sup> Grade Question
+				</h2>
+			</div>
+			<div id="team_info">
+				<h1>Crown of Life</h1>
+				<h2>Cougars</h2>
+			</div>
+		</div>
+		<div id="question">
+			<strong id="question_label">Question:</strong>
+			<pre id="visual">+-----------+
+|           |
+|   Garden  |
+|  picture  |
+|    here   |
+|           |
++-----------+</pre>
+			<p>
+				You want to make a square garden with a perimeter of 20 feet. What will be the area of the garden?
+			</p>
+		</div>
+		<div id="answer">
+			<input type="text" id="answer" name="answer" value="42" />
+			<br/>
+			<button>
+				Submit
+			</button>
+			<strong id="answer_label">Answer:</strong>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>QuizBowl Login</title>
+		<script src="http://code.jquery.com/jquery-1.6.1.min.js">
+		</script>
+		<script src="/js/growl.js">
+		</script>
+		<link href="/css/growl.css" rel="stylesheet">
+		<script>
+		[% IF login_fail %]
+			$(document).ready(function(){
+				$.growl('Wrong Username or password.');
+			});
+		[% END %]
+		</script>
+		<link href="/css/style.css" rel="stylesheet">
+	</head>
+	<body>
+		<h1>QuizBowl Login</h1>
+	<form method="post">
+	Email: <input type="text" name="email" /><br />
+	Password: <input type="password" name="password" /><br />
+	<input type="submit" />
+	</form>
+	<small>[% c.model('DB::User').search_rs({is_admin=>0}).get_column('email').all.join('<br >') %]</small>
+	</body>
+</html>

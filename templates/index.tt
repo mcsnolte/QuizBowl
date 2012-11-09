@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link href="/css/style.css" rel="stylesheet">
+		<script src="http://code.jquery.com/jquery-1.6.1.min.js">
+		</script>
+	</head>
+	<body>
+	[% IF c.user -%]
+		[% IF c.user.is_admin %]
+		<a href="/admin">Admin</a>
+		[% ELSE %]
+		<a href="/player">Player</a>
+		[% END %]
+		| <a href="/logout">Logout</a>
+	[% ELSE %]
+		<a href="/login">Login</a>
+	[% END %]
+	</body>
+</html>

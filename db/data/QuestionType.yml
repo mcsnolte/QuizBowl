@@ -1,0 +1,12 @@
+---
+data:
+  text:
+    name: "Text Box"
+    description: "Single line text box"
+  radio:
+    name: "Multiple Choice"
+    description: "See list of choices to pick one answer"
+  boolean:
+    name: "True/False"
+    description: "True or False boolean value"
+

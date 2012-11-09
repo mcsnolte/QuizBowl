@@ -1,0 +1,78 @@
+
+MUST
+
+Allow administering the questions, schools, players, and events
+Provide editor for the questions with a markdown syntax
+Provide a preview for the questions
+Allow drawing pictures
+
+
+
+
+TODO:
+
+MUST
+X Enter player and school data
+X Reorder the questions to match the 3 team questions per round (1, 2, or 3 points)
+X   - but there are only 6 questions for each point level?
+X Restart the page shows the active question
+X Admin grid editing for submissions needs to PUT and save the edits
+X Player screen needs round summary screen with feedback of correct answers
+X Presenter screen needs round summary, like player screen, or correct answers
+X  - or just change the colors of the players based on correctness
+X Practice questions
+X Point totals on the Roll Call screen
+X Points based on order of submission: 5,4,3,2,1 and 1 for all correct answers
+X  - Add button to calculate the scores after determining correctness is done
+X   - Team points:  5,4,3,2,1... 10,8,6,4,2... 15,12,9,6,3...
+
+X Add sorting for points
+X Make sure points are calculated correctly
+
+NICE
+X Column for timestamp
+Deactivate start on click
+Delete submissions
+Grid/List view for admin Roll Call
+Slides to show
+Resubmit an answer
+Grid view of history
+
+
+
+
+Ghazi?
+Delete submission row
+Get index of a question to open a tab at startup
+
+
+
+ENDPOINTS:
+
+/api/rest/...
+  /submission?event_question=1
+
+
+
+
+ADMIN SCREEN:
+
+List of questions, ordered, to choose what is next.
+List of slides to add/edit/choose to display.
+Timer (editable amount) to start a countdown
+Players and their status, answers they submitted, indicate correct or incorrect
+  This will be tied to a question
+
+End points:
+/
+
+
+PRESENTER MODES:
+
+Game Board
+
+Current Results
+
+Final Results
+
+Dynamic Slide

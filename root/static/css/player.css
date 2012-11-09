@@ -1,0 +1,150 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #fff;
+    font-size: 100%;
+    font-family: 'Lato', sans-serif;
+}
+
+div#header {
+    position: relative;
+    height: 5em;
+    background-color: #ccc;
+    padding: 1em;
+}
+
+div#header h1 {
+    margin: 0;
+}
+
+div#header div#event_info {
+    width: 25%;
+    float: left;
+}
+
+div#header div#round_info {
+    width: 50%;
+    float: left;
+    margin: 0 auto;
+    text-align: center;
+}
+
+div#header div#team_info {
+    width: 25%;
+    float: right;
+    text-align: right;
+}
+
+div#roll_call {
+    clear: all;
+    background-color: #fff;
+    position: absolute;
+    right: 0;
+    text-align: center;
+    font-size: 1.25em;
+    padding: .5em;
+    width: 100%;
+}
+
+div#roll_call table {
+    width: 100%;
+}
+
+div#roll_call button {
+    font-size: .4em;
+}
+
+.ready, .correct {
+    color: green;
+}
+
+.waiting {
+    color: orange;
+}
+
+.disconnected, .incorrect {
+    color: red;
+}
+
+div#question {
+    clear: all;
+    background-color: #fff;
+    position: relative;
+    font-size: 1.8em;
+    text-align: center;
+    padding: 1.25em;
+}
+
+strong#question_label {
+    color: #ccc;
+    position: absolute;
+    font-size: 1.5em;
+    font-style: italic;
+    top: 0;
+    left: 0;
+}
+
+div#question pre#visual {
+    font-size: .8em;
+    width: 5em;
+    float: right;
+    margin: 0;
+    padding: 0 3em;
+}
+
+div#answer {
+    clear: all;
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    color: #fff;
+    text-align: center;
+    font-size: 1.8em;
+    margin: 0em;
+    background-color: #000;
+}
+
+strong#answer_label {
+    color: #666;
+    position: absolute;
+    font-size: 1.5em;
+    font-style: italic;
+    top: 0;
+    left: 0;
+}
+
+div#answer input {
+    font-size: 1.5em;
+    width: 10em;
+    margin-top: 1em;
+    text-align: center;
+}
+
+div#answer button {
+    font-size: 1em;
+    height: 2em;
+    width: 10em;
+    margin: 1em;
+}
+
+div#results_panel {
+	font-size: 1.25em;
+}
+
+div#results_list {
+	text-align: center;
+}
+
+div#results_panel table {
+	width: 100%;
+}
+
+div#results_panel table td {
+	text-align: center;
+}
+
+div#results_panel #results_message {
+	width: 100%;
+	text-align: center;
+	margin: 2em 0;
+}

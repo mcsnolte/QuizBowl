@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="http://code.jquery.com/jquery-1.6.1.min.js">
+		</script>
+		<script src="/socket.io/socket.io.js">
+		</script>
+		<script src="/static/js/growl.js">
+		</script>
+		<script src="/static/js/player.js">
+		</script>
+		<script>
+			$(document).ready(function(){
+			    init_player('[% c.sessionid %]');
+			})
+		</script>
+		<script type="text/javascript" src= "http://cdn.mathjax.org/mathjax/latest/MathJax.js">
+			MathJax.Hub.Config({
+			    extensions: ["tex2jax.js"],
+			    jax: ["input/TeX", "output/HTML-CSS"],
+			    tex2jax: {
+			        inlineMath: [['$', '$']], //, ['\\(','\\)']]
+			    },
+			    messageStyle: 'none', // hide status messages
+			});
+			MathJax.Hub.Startup.onload();
+		</script>
+		<link href="/static/css/growl.css" rel="stylesheet">
+		<link href="/static/css/button.css" rel="stylesheet">
+		<link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+		<link href="/static/css/player.css" rel="stylesheet">
+	</head>
+	<body>
+		<div id="header">
+			<div id="event_info">
+				<h1>GMLSAL</h1>
+				<h2>Math Bowl 2011</h2>
+			</div>
+			<div id="round_info">
+				<h1 id="round_number"></h1>
+				<h2 id="question_level"></h2>
+			</div>
+			<div id="team_info">
+				<h1>[% c.user.school.name | html %]</h1>
+				<h2>[% c.user.school.mascot | html %]</h2>
+			</div>
+		</div>
+		<div id="waiting_panel" class="panel">
+			<div id="roll_call">
+				<table>
+					<col width="40%" />
+					<col width="20%" />
+					<col width="40%" />
+					<thead>
+						<tr>
+							<th>
+								School
+							</th>
+							<th>
+								Score
+							</th>
+							<th>
+								Status
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td colspan="3">
+								Loading...
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div id="question_panel" class="panel">
+			<div id="question">
+				<strong id="question_label">Question:</strong>
+				<p id="question_text">
+				</p>
+			</div>
+			<div id="answer">
+				<form id="answer_form" method="post" action="">
+					<input type="text" id="answer_text" name="answer_text" value="" />
+					<br/>
+					<button id="submit_button">
+						Submit
+					</button>
+				</form>
+				<strong id="answer_label">Answer:</strong>
+			</div>
+		</div>
+		<div id="results_panel" class="panel">
+			<div id="results_message">Waiting...</div>
+			<div id="results_list"></div>
+			<table>
+				<col width="40%" />
+				<col width="20%" />
+				<col width="40%" />
+				<thead>
+					<tr>
+						<th>
+							School
+						</th>
+						<th>
+							Time
+						</th>
+						<th>
+							Score
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td colspan="3">
+							Loading...
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</body>
+</html>

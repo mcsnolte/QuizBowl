@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link href="/css/style.css" rel="stylesheet">
+		<style type="text/css">
+			body {
+			    margin: 0;
+			    padding: 0;
+			    background-color: #000;
+			    font-size: 100%;
+			    font-family: Arial;
+			}
+			
+			div#header {
+			    position: relative;
+			    height: 6em;
+			    background-color: #ccc;
+			    padding: 1em;
+			}
+			
+			div#header h1 {
+			    margin: 0;
+			}
+			
+			div#header div#event_info {
+			    width: 25%;
+			    float: left;
+			}
+			
+			div#header div#round_info {
+			    width: 50%;
+			    float: left;
+			    margin: 0 auto;
+			    text-align: center;
+			}
+			
+			div#header div#team_info {
+			    width: 25%;
+			    float: right;
+			    text-align: right;
+			}
+			
+			div#roll_call {
+			    clear: all;
+			    background-color: #fff;
+			    position: relative;
+			    text-align: center;
+			    font-size: 2em;
+			    padding: 1em;
+			}
+			div#roll_call table {
+				width: 100%;
+			}
+			div#roll_call button {
+				font-size: .8em;
+			}
+			.ready {
+				color: green;
+			}
+			.waiting {
+				color: orange;
+			}
+			.disconnected {
+				color: red;
+			}
+
+		</style>
+	</head>
+	<body>
+		<div id="header">
+			<div id="event_info">
+				<h1>GMLSAL</h1>
+				<h2>Math Bowl 2011</h2>
+			</div>
+			<div id="round_info">
+				<h1>Waiting Room</h1>
+				<h2>Up Next: 5<sup>th</sup> Grade Question</h2>
+			</div>
+			<div id="team_info">
+				<h1>Crown of Life</h1>
+				<h2>Cougars</h2>
+			</div>
+		</div>
+		<div id="roll_call">
+			<table>
+				<tr>
+					<th>
+						School
+					</th>
+					<th>
+						Score
+					</th>
+					<th>
+						Status
+					</th>
+				</tr>
+				<tr>
+					<td>
+						St. John's
+					</td>
+					<td>
+						24
+					</td>
+					<td class="waiting">
+						Waiting...
+					</td>
+				</tr>
+				<tr>
+					<td>
+						St. Paul's
+					</td>
+					<td>
+						20
+					</td>
+					<td class="ready">
+						Ready
+					</td>
+				</tr>
+				<tr>
+					<td>
+						Peace
+					</td>
+					<td>
+						18
+					</td>
+					<td class="ready">
+						Ready
+					</td>
+				</tr>
+				<tr>
+					<td>
+						Cross of Glory
+					</td>
+					<td>
+						10
+					</td>
+					<td class="ready">
+						Ready
+					</td>
+				</tr>
+				<tr>
+					<td>
+						Crown of Life
+					</td>
+					<td>
+						8
+					</td>
+					<td>
+						<em>Are you ready?</em> <button>Yes!</button>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						Zion Toledo
+					</td>
+					<td>
+						6
+					</td>
+					<td class="ready">
+						Ready
+					</td>
+				</tr>
+				<tr>
+					<td>
+						Zion Monroe
+					</td>
+					<td>
+						4
+					</td>
+					<td class="ready">
+						Ready
+					</td>
+				</tr>
+				<tr>
+					<td>
+						St. Stephen
+					</td>
+					<td>
+						2
+					</td>
+					<td class="disconnected">
+						Disconnected!
+					</td>
+				</tr>
+				<tr>
+					<td>
+						Trinity
+					</td>
+					<td>
+						0
+					</td>
+					<td class="waiting">
+						Waiting...
+					</td>
+				</tr>
+				<tr>
+					<td>
+						Divine Grace
+					</td>
+					<td>
+						0
+					</td>
+					<td class="ready">
+						Ready
+					</td>
+				</tr>
+				<tr>
+					<td>
+						St. Peter's
+					</td>
+					<td>
+						0
+					</td>
+					<td class="waiting">
+						Waiting...
+					</td>
+				</tr>
+			</table>
+		</div>
+	</body>
+</html>

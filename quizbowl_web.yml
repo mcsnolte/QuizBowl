@@ -1,0 +1,24 @@
+name: "QuizBowl::Web"
+
+"Model::DB":
+  connect_info:
+    dsn: "dbi:Pg:dbname=quizbowl"
+    user: 
+    password: 
+    AutoCommit: 1
+
+"Plugin::Authentication":
+  default_realm: users
+  realms:
+    users:
+      credential:
+        class: Password
+        password_field: password
+        password_type: salted_hash
+        password_salt_len: 4
+        password_hash_type: SHA-1
+      store:
+        class: "DBIx::Class"
+        user_model: "DB::User"
+        role_relation: user_capabilities
+        role_field: capability

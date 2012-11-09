@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="http://code.jquery.com/jquery-1.6.1.min.js">
+		</script>
+		<script type="text/javascript" src= "http://cdn.mathjax.org/mathjax/latest/MathJax.js">
+			MathJax.Hub.Config({
+			    extensions: ["tex2jax.js"],
+			    jax: ["input/TeX", "output/HTML-CSS"],
+			    tex2jax: {
+			        inlineMath: [['$', '$']],
+			    }
+			});
+		</script>
+		<script>
+			$(document).ready(function(){
+			    // Quick helper to show headings
+			    $('body > div').each(function(){
+			        var heading = this.id.replace('_', ' ') + ' questions';
+			        $(this).prepend($('<h1>').html(heading));
+			        $(this).find('div').each(function(){
+			            var heading = this.id.replace('_', ' ');
+			            $(this).prepend($('<h2>').html(heading));
+			        });
+			    });
+			});
+		</script>
+		<style type="text/css">
+			body {
+			    font-family: Arial;
+			}
+			
+			.question, .answer {
+			    font-size: 30px; /* resize all questions and answers here */
+			}
+		</style>
+	</head>
+	<body>
+		<div id="grade_5">
+			<div id="question_1">
+				<p class="question">
+					What is the product of all four digits of the year 2011?
+				</p>
+				<p class="answer">
+					0
+				</p>
+				<p class="value">
+					0
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_2">
+				<p class="question">
+					$\frac{5075}{25}$
+				</p>
+				<p class="answer">
+					203
+				</p>
+				<p class="value">
+					203
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_3">
+				<p class="question">
+					Today, the difference between my parents&rsquo; ages is 10 years.  Four years ago, what was the difference between their ages?
+				</p>
+				<p class="answer">
+					10 years
+				</p>
+				<p class="value">
+					10 years
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_4">
+				<p class="question">
+					ABCD is a square.  BEC is an equilateral triangle.  What is the perimeter of shape ABECD?
+					<br/>
+					<img height="154" src="images/image40.png" width="233">
+				</p>
+				<p class="answer">
+					20 in.
+				</p>
+				<p class="value">
+					20 in.
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_5">
+				<p class="question">
+					What is 
+					<br/>
+					<img src="images/image01.png">of 10?
+				</p>
+				<p class="answer">
+					6
+				</p>
+				<p class="value">
+					6
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_6">
+				<p class="question">
+					<br/>
+					<img src="images/image02.png">
+				</p>
+				<p class="answer">
+				</p>
+				<p class="value">
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_7">
+				<p class="question">
+					Write 
+					<br/>
+					<img src="images/image04.png">in standard notation.
+				</p>
+				<p class="answer">
+					81,704
+				</p>
+				<p class="value">
+					81,704
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_8">
+				<p class="question">
+					$\frac{1}{2}\div\frac{2}{3}$
+				</p>
+				<p class="answer">
+					$\frac{3}{4}$
+				</p>
+				<p class="value">
+					.75
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+		</div>
+		<div id="grade_6">
+			<div id="question_1">
+				<p class="question">
+					12&frac12;% of 80 =
+				</p>
+				<p class="answer">
+					10
+				</p>
+				<p class="value">
+					10
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_2">
+				<p class="question">
+					There are 10 chickens and 10 cows.  How many legs are there?
+				</p>
+				<p class="answer">
+					60
+				</p>
+				<p class="value">
+					60
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_3">
+				<p class="question">
+					How many prime numbers are between 20 and 30?
+				</p>
+				<p class="answer">
+					2
+				</p>
+				<p class="value">
+					2
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_4">
+				<p class="question">
+					Sue had an average of exactly 84 after 2 tests.  She scored 96 on the 3rd test.  What is her average for all 3 tests?
+				</p>
+				<p class="answer">
+					88
+				</p>
+				<p class="value">
+					88
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_5">
+				<p class="question">
+					Write the reduced fraction for 45%
+				</p>
+				<p class="answer">
+				</p>
+				<p class="value">
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_6">
+				<p class="question">
+					Find the area.
+					<br/>
+					<img height="98" src="images/image45.png" width="177">
+				</p>
+				<p class="answer">
+					16 square cm
+				</p>
+				<p class="value">
+					16 square cm
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_7">
+				<p class="question">
+					<br/>
+					<img src="images/image08.png">
+				</p>
+				<p class="answer">
+					13
+				</p>
+				<p class="value">
+					13
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_8">
+				<p class="question">
+					<br/>
+					<img src="images/image09.png">
+				</p>
+				<p class="answer">
+				</p>
+				<p class="value">
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+		</div>
+		<div id="grade_7">
+			<div id="question_1">
+				<p class="question">
+					What percent of 30 is 6?
+				</p>
+				<p class="answer">
+					20%
+				</p>
+				<p class="value">
+					20%
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_2">
+				<p class="question">
+					A man spent &#8532; of his money and then lost &#8532; of his remaining money, leaving him with $18.  With how much money did he start?
+				</p>
+				<p class="answer">
+					$162
+				</p>
+				<p class="value">
+					$162
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_3">
+				<p class="question">
+					List the single digit whole numbers that are factors of 36,270.
+				</p>
+				<p class="answer">
+					1, 2, 3, 5, 6, 9
+				</p>
+				<p class="value">
+					1, 2, 3, 5, 6, 9
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_4">
+				<p class="question">
+					What is the largest prime number that is a factor of 364.
+				</p>
+				<p class="answer">
+					13
+				</p>
+				<p class="value">
+					13
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_5">
+				<p class="question">
+					Round 
+					<br/>
+					<img src="images/image11.png">to the nearest hundredth.
+				</p>
+				<p class="answer">
+					283.57
+				</p>
+				<p class="value">
+					283.57
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_6">
+				<p class="question">
+					<br/>
+					<img src="images/image12.png">
+				</p>
+				<p class="answer">
+					8
+				</p>
+				<p class="value">
+					8
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_7">
+				<p class="question">
+					Find the perimeter.
+					<br/>
+					<img height="239" src="images/image46.png" width="238">
+				</p>
+				<p class="answer">
+					86
+				</p>
+				<p class="value">
+					86
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_8">
+				<p class="question">
+					5 ft    7 in.- 3 ft  10 in.
+				</p>
+				<p class="answer">
+					1 ft 9 in.
+				</p>
+				<p class="value">
+					1 ft 9 in.
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+		</div>
+		<div id="grade_8">
+			<div id="question_1">
+				<p class="question">
+					1.23 + 0.046 =
+				</p>
+				<p class="answer">
+					1.276
+				</p>
+				<p class="value">
+					1.276
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_2">
+				<p class="question">
+					What is the area of the shaded portion of this grid.
+					<br/>
+					<img height="146" src="images/image42.png" width="146">
+				</p>
+				<p class="answer">
+					3 square units
+				</p>
+				<p class="value">
+					3 square units
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_3">
+				<p class="question">
+					What is 80% of 21?
+				</p>
+				<p class="answer">
+					16.8
+				</p>
+				<p class="value">
+					16.8
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_4">
+				<p class="question">
+					<br/>
+					<img src="images/image13.png">
+				</p>
+				<p class="answer">
+					4
+				</p>
+				<p class="value">
+					4
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_5">
+				<p class="question">
+					Change 
+					<br/>
+					<img src="images/image14.png">to a reduced fraction.
+				</p>
+				<p class="answer">
+				</p>
+				<p class="value">
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_6">
+				<p class="question">
+					Solve for 
+					<br/>
+					<img src="images/image16.png">.
+					<br/>
+					<img src="images/image17.png">
+				</p>
+				<p class="answer">
+					2
+				</p>
+				<p class="value">
+					2
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_7">
+				<p class="question">
+					What percent of 44 is 55?
+				</p>
+				<p class="answer">
+					125%
+				</p>
+				<p class="value">
+					125%
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_8">
+				<p class="question">
+					Evaluate for 
+					<br/>
+					<img src="images/image18.png">and 
+					<br/>
+					<img src="images/image19.png">
+					<br/>
+					<img src="images/image20.png">
+				</p>
+				<p class="answer">
+					-19
+				</p>
+				<p class="value">
+					-19
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+		</div>
+		<div id="team">
+			<div id="question_1">
+				<p class="question">
+					How many prime numbers are between 1 and 40?
+				</p>
+				<p class="answer">
+					12
+				</p>
+				<p class="value">
+					12
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_2">
+				<p class="question">
+					The average of four numbers is 10.  Three of the four numbers are 2, 14, and 7.  What is the fourth number?
+				</p>
+				<p class="answer">
+					17
+				</p>
+				<p class="value">
+					17
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_3">
+				<p class="question">
+					<br/>
+					<img src="images/image21.png">
+				</p>
+				<p class="answer">
+				</p>
+				<p class="value">
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_4">
+				<p class="question">
+					Find the area.
+					<br/>
+					<img height="129" src="images/image44.png" width="223">
+				</p>
+				<p class="answer">
+					40 square units
+				</p>
+				<p class="value">
+					40 square units
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_5">
+				<p class="question">
+					<br/>
+					<img src="images/image23.png">
+				</p>
+				<p class="answer">
+					50
+				</p>
+				<p class="value">
+					50
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_6">
+				<p class="question">
+					<br/>
+					<img src="images/image24.png">
+				</p>
+				<p class="answer">
+					Team QuestionsTwo Point Questions
+				</p>
+				<p class="value">
+					Team QuestionsTwo Point Questions
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_1">
+				<p class="question">
+					XLIV =
+				</p>
+				<p class="answer">
+					44
+				</p>
+				<p class="value">
+					44
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_2">
+				<p class="question">
+					<br/>
+					<img src="images/image26.png">
+				</p>
+				<p class="answer">
+					-28
+				</p>
+				<p class="value">
+					-28
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_3">
+				<p class="question">
+					Evaluate for 
+					<br/>
+					<img src="images/image27.png">and 
+					<br/>
+					<img src="images/image28.png">
+					<br/>
+					<img src="images/image29.png">
+				</p>
+				<p class="answer">
+					-72
+				</p>
+				<p class="value">
+					-72
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_4">
+				<p class="question">
+					Find m.
+					<br/>
+					<img height="124" src="images/image41.png" width="96">
+				</p>
+				<p class="answer">
+					3 units
+				</p>
+				<p class="value">
+					3 units
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_5">
+				<p class="question">
+					<br/>
+					<img src="images/image30.png">
+				</p>
+				<p class="answer">
+					7
+				</p>
+				<p class="value">
+					7
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_6">
+				<p class="question">
+					If 
+					<br/>
+					<img src="images/image31.png">, what is the value of 
+					<br/>
+					<img src="images/image32.png">?
+				</p>
+				<p class="answer">
+					11Team QuestionsThree Point Questions
+				</p>
+				<p class="value">
+					11Team QuestionsThree Point Questions
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_1">
+				<p class="question">
+					Factor completely: 
+					<br/>
+					<img src="images/image33.png">
+				</p>
+				<p class="answer">
+				</p>
+				<p class="value">
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_2">
+				<p class="question">
+					Find 3 consecutive even integers such that 4 times the sum of the first and third is 16 greater than 7 times the second.
+				</p>
+				<p class="answer">
+					14, 16, 18
+				</p>
+				<p class="value">
+					14, 16, 18
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_3">
+				<p class="question">
+					Solve for 
+					<br/>
+					<img src="images/image16.png">.
+					<br/>
+					<img src="images/image35.png">
+				</p>
+				<p class="answer">
+				</p>
+				<p class="value">
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_4">
+				<p class="question">
+					Solve for 
+					<br/>
+					<img src="images/image37.png">
+					<br/>
+					<img src="images/image38.png">
+				</p>
+				<p class="answer">
+				</p>
+				<p class="value">
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_5">
+				<p class="question">
+					Find the area.
+					<br/>
+					<img height="114" src="images/image43.png" width="218">
+				</p>
+				<p class="answer">
+					92 square units
+				</p>
+				<p class="value">
+					92 square units
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+			<div id="question_6">
+				<p class="question">
+					Solve the following system of equations:
+					<br/>
+					x - 9y = 17
+					<br/>-4x + 7y = 19
+				</p>
+				<p class="answer">
+					x = -10 and y = -3, or (-10, -3)
+				</p>
+				<p class="value">
+					x = -10 and y = -3, or (-10, -3)
+				</p>
+				<p class="explanation">
+				</p>
+			</div>
+		</div>
+	</body>
+</html>

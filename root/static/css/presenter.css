@@ -1,0 +1,74 @@
+body {
+    font-family: 'Lato', sans-serif;
+    overflow: hidden;
+}
+
+h1 {
+    font-size: 2em;
+    width: 100%;
+    border-bottom: solid 1px;
+}
+
+h2 {
+    font-size: 1.8em;
+}
+
+#scores table {
+	margin: 5% 25%;
+    width: 50%;
+}
+
+#results table {
+	width: 50%;
+	margin: 2em 25%;
+}
+
+#scores th, #scores td, #results th, #results td {
+	font-size: 1.5em;
+	text-align: center;
+}
+
+td#results_answer {
+	font-size: 2em;
+}
+
+table#points .time {
+	text-align: right;
+}
+
+#game_board table {
+	width: 100%;
+}
+
+td#question_pane {
+	vertical-align: top;
+	padding: 1em;
+}
+
+div#question_text {
+    padding: 1em;
+    font-size: 3em;
+    text-align: center;
+}
+
+td#results_pane {
+	vertical-align: top;
+    width: 16em;
+    padding: 1em;
+}
+
+div#results_list {
+    font-size: 1.5em;
+}
+
+.ready, .correct {
+    color: green;
+}
+
+.waiting {
+    color: orange;
+}
+
+.disconnected, .incorrect {
+    color: red;
+}

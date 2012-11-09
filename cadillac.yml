@@ -1,0 +1,8 @@
+---
+global:
+  schema_class: QuizBowl::Schema
+  connection_info:
+    - dbi:Pg:dbname=quizbowl
+    - ~
+    - ~
+

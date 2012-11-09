@@ -1,0 +1,53 @@
+
+body {
+    font: 11px tahoma, arial, helvetica;
+}
+
+p {
+    margin-bottom: 10px;
+}
+
+h1 {
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.thumb {
+    background: #dddddd;
+    padding: 3px;
+}
+
+.thumb img {
+    height: 45px;
+    width: 90px;
+}
+
+.thumb-wrap {
+    float: left;
+    margin: 5px;
+    margin-right: 0;
+    padding: 5px;
+}
+
+.thumb-wrap span {
+    display: block;
+    overflow: hidden;
+    text-align: center;
+}
+
+.x-view-over {
+    border: 1px solid #dddddd;
+    background: #efefef url(../images/row-over.gif) repeat-x left top;
+    padding: 4px;
+}
+
+.x-view-selected {
+    background: #eff5fb url(../images/selected.gif) no-repeat right bottom;
+    border: 1px solid #99bbe8;
+    padding: 4px;
+}
+
+.x-view-selected .thumb {
+    background: transparent;
+}
