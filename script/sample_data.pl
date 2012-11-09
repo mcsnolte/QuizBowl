@@ -1,5 +1,8 @@
 #!/usr/bin/env perl
 
+# ABSTRACT: Load sample data
+# PODNAME: sample_data.pl
+
 use strict;
 use warnings;
 
