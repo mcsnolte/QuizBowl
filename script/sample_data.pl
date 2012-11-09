@@ -15,7 +15,7 @@ my @users  = $schema->resultset('User')->populate(
 			email      => 'admin@example.com',
 			first_name => 'System',
 			last_name  => 'Admin',
-			password   => '{SSHA}A7ns59ohOYqZVgiWHRbzGwDuZ/8tHOpV',
+			password   => '{SSHA}ISN50JK4biecQNndthC2/+V3KKf3zF/d',
 			is_admin   => 1,
 		},
 	]
@@ -61,7 +61,7 @@ my @schools = $schema->resultset('School')->populate(
 								email      => $_->{email} . '@example.com',
 								first_name => $_->{school},
 								last_name  => 'Team',
-								password   => '{SSHA}A7ns59ohOYqZVgiWHRbzGwDuZ/8tHOpV',
+								password   => '{SSHA}ISN50JK4biecQNndthC2/+V3KKf3zF/d',
 							}
 						]
 					}
