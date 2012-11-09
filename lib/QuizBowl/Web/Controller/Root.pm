@@ -13,7 +13,6 @@ BEGIN { extends 'Catalyst::Controller' }
 #
 __PACKAGE__->config( namespace => '' );
 
-
 sub auto : Private() {
 	my ( $self, $c ) = @_;
 
@@ -29,8 +28,8 @@ sub index : Path : Args(0) {
 sub login : Local {
 	my ( $self, $c ) = @_;
 	if (
-		$c->req->param('email') &&
-		$c->authenticate(
+		$c->req->param('email')
+		&& $c->authenticate(
 			{
 				password   => $c->req->param('password'),
 				dbix_class => { searchargs => [ { email => $c->req->param('email'), } ] },
@@ -59,23 +58,31 @@ sub logout : Local {
 	$c->res->redirect('/');
 }
 
-
 sub player : Local : Args(0) {
 	my ( $self, $c ) = @_;
 	$c->res->redirect('/') unless $c->user_exists && !$c->user->is_admin;
 }
 
-
 sub presenter : Local {
 	my ( $self, $c ) = @_;
 }
-
 
 sub admin : Local {
 	my ( $self, $c ) = @_;
 	$c->res->redirect('/') unless $c->user_exists && $c->user->is_admin;
 }
 
+sub bad_request : Private {
+	my ( $self, $c ) = @_;
+	$c->res->body('Bad request');
+	$c->res->status('400');
+}
+
+sub access_denied : Private {
+	my ( $self, $c ) = @_;
+	$c->res->body('Access deined');
+	$c->res->status('403');
+}
 
 sub default : Path {
 	my ( $self, $c ) = @_;
@@ -83,10 +90,8 @@ sub default : Path {
 	$c->response->status(404);
 }
 
-
 sub end : ActionClass('RenderView') {
 }
-
 
 __PACKAGE__->meta->make_immutable;
 
