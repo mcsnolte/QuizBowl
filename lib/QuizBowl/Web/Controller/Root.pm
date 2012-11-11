@@ -72,6 +72,16 @@ sub admin : Local {
 	$c->res->redirect('/') unless $c->user_exists && $c->user->is_admin;
 }
 
+sub question : Local {
+       my ( $self, $c ) = @_;
+       $c->res->redirect('/') unless $c->user_exists && $c->user->is_admin;
+}
+
+sub event : Local {
+       my ( $self, $c ) = @_;
+       $c->res->redirect('/') unless $c->user_exists && $c->user->is_admin;
+}
+
 sub bad_request : Private {
 	my ( $self, $c ) = @_;
 	$c->res->body('Bad request');
