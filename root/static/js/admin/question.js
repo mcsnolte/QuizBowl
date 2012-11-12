@@ -38,7 +38,12 @@ Ext.onReady(function() {
 		restful: true,
 		baseParams: { start: 0, limit: 25 },
 		remoteSort: true,
-		sortInfo: { field: 'last_mod_date', direction: 'DESC' }
+		sortInfo: { field: 'last_mod_date', direction: 'DESC' },
+		listeners: {
+			load: function(obj, records){
+				MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+			}
+		}
 	});
 
 	questionList = new Ext.Panel({
