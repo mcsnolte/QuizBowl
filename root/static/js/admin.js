@@ -123,7 +123,7 @@ Ext.onReady(function(){
         store: new Ext.data.JsonStore({
             autoLoad: true,
             root: 'data',
-            url: '/api/event/1/questions',
+            url: '/api/event/1/questions?sort=sequence&dir=asc&start=0&limit=100',
             fields: ['event_question_id', 'question_id', 'round_number', 'sequence', 'start_timestamp', 'close_timestamp', {
                 name: 'question',
                 mapping: 'question.question'
