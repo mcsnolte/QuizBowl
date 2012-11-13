@@ -574,9 +574,9 @@ foreach my $practice (@questions) {
 	next unless $practice->level_id eq 'practice';
 	push @event_questions,
 	  {
-		question_id  => $practice->id,
-		round_number => 0,
-		sequence     => 0,
+		question_id    => $practice->id,
+		round_number   => 0,
+		sequence       => 0,
 		create_user_id => 0,
 	  };
 }
@@ -589,9 +589,9 @@ foreach my $i ( 0 .. 7 ) {
 		my $qid = $questions[ $i + $j * 8 ]->id;
 		push @event_questions,
 		  {
-			question_id  => $qid,
-			round_number => $round,
-			sequence     => $seq++,
+			question_id    => $qid,
+			round_number   => $round,
+			sequence       => $seq++,
 			create_user_id => 0,
 		  };
 	}
@@ -603,9 +603,9 @@ foreach my $i ( 0 .. 7 ) {
 		my $qid = $questions[ $j * 6 + 8 * 4 + $i ]->id;
 		push @event_questions,
 		  {
-			question_id  => $qid,
-			round_number => $round,
-			sequence     => $seq++,
+			question_id    => $qid,
+			round_number   => $round,
+			sequence       => $seq++,
 			create_user_id => 0,
 		  };
 	}
@@ -616,14 +616,23 @@ foreach my $i ( 0 .. 7 ) {
 my ($event) = $schema->resultset('Event')->populate(
 	[
 		{
-			name             => 'GMLSAL Quiz Bowl 2011',
-			start_time       => \'now()',
-			end_time         => \"now() + INTERVAL '1 hour'",
-			registered_teams => [ map { { team_id => $_->team_id, } } $schema->resultset('Team')->all() ],
+			name       => 'GMLSAL Quiz Bowl 2011',
+			start_time => \'now()',
+			end_time   => \"now() + INTERVAL '1 hour'",
 		}
 	]
 );
-$event->questions->populate(\@event_questions);
+$event->registered_teams->populate(
+	[
+		map {
+			{
+				create_user_id => 0,
+				team_id        => $_->team_id,    #
+			}
+		  } $schema->resultset('Team')->all()
+	]
+);
+$event->questions->populate( \@event_questions );
 
 my @screens = $schema->resultset('Slide')->populate(
 	[
