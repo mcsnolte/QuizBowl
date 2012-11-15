@@ -13,7 +13,7 @@ class_has 'event' => (
 	is      => 'rw',
 	isa     => 'Object',
 	default => sub {
-		return QuizBowl::Core->schema->resultset('Event')->find(1);
+		return QuizBowl::Core->schema->resultset('Event')->find(2);
 	}
 );
 
@@ -33,20 +33,43 @@ sub _build_users_by_score {
 	my $self = shift;
 	my @users;
 
-	my $players_rs = QuizBowl::SocketIO->event->registered_teams->search(
+	my @user_scores = QuizBowl::SocketIO->event->questions->search(
 		{},
 		{
-			'select' => [ 'team.name', 'players.user_id', { sum => 'submissions.points', } ],
-			'as'     => [qw/team_name user_id score/],
-			group_by => [ 1, 2 ],
-			order_by => \'3 DESC NULLS LAST, 1',
-			join => [ 'team', { players => { submissions => 'event_question', }, } ],
+			columns => [
+				{ 'user_id' => 'submissions.create_user_id' },    #
+				{ 'score' => { sum => 'submissions.points' } }
+			],
+			join         => 'submissions',
+			group_by     => 1,
 			result_class => 'DBIx::Class::ResultClass::HashRefInflator',
 		}
-	);
-	foreach my $user ( $players_rs->all() ) {
-		push @users, $user->{'user_id'};
-		QuizBowl::SocketIO->users->{ $user->{'user_id'} }->{score} = $user->{'score'} // 0;
+	)->all();
+	my %scores_for_user = map { $_->{user_id} => $_->{score} } @user_scores;
+
+	my @players = QuizBowl::SocketIO->event->registered_teams->search(
+		{},
+		{
+			columns => [
+				{ team    => 'team.name' },        #
+				{ user_id => 'players.user_id' }
+			],
+			join         => [ 'team', 'players' ],
+			order_by     => 1,
+			result_class => 'DBIx::Class::ResultClass::HashRefInflator',
+		}
+	)->all();
+
+	foreach my $user (
+		sort {
+			( $scores_for_user{ $b->{user_id} } || 0 ) <=> ( $scores_for_user{ $a->{user_id} } || 0 )    #
+			  || $a->{team} cmp $b->{team}
+		} @players
+	  )
+	{
+		push @users, $user->{user_id};
+		QuizBowl::SocketIO->users->{ $user->{'user_id'} }->{score} =                                     #
+		  $scores_for_user{ $user->{user_id} } // 0;
 	}
 	return \@users;
 }
