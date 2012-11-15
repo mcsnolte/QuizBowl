@@ -1,5 +1,7 @@
 Ext.onReady(function(){
     Ext.QuickTips.init();
+    var pageParameters = Ext.urlDecode(window.location.href.split('?')[1]);
+	var event_id = pageParameters.event_id || 1;
     //Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
     var northPanel = new Ext.BoxComponent({
         region: 'north',
@@ -7,10 +9,21 @@ Ext.onReady(function(){
         autoEl: {
             tag: 'div',
             style: 'padding: 5px',
-            html: '<h1>GMLSAL Quiz Bowl 2011</h1><h3>Administration Screen</h3>'
+            html: '<h1>Administration Screen</h1>'
         }
     });
-	
+    Ext.Ajax.request({
+        url: '/api/event/' + pageParameters.event_id,
+        success: function(response, opts) {
+           var obj = Ext.decode(response.responseText);
+           console.dir(obj);
+		   northPanel.getContentTarget().update('<h1>Administration Screen</h1><h3>'+obj.data.name+'</h3>');
+        },
+        failure: function(response, opts) {
+			Ext.Msg.alert('Event not found', 'Event #' + event_id + ' does not exist.');
+        }
+    });
+
 	/*
 	var userList = new Ext.list.ListView({
         id: 'user-list',
@@ -52,7 +65,7 @@ Ext.onReady(function(){
         tpl: new Ext.XTemplate('<tpl for="rows">', '<dl class="x-grid3-row {[xindex % 2 === 0 ? "" :  "x-grid3-row-alt"]}">', '<tpl for="parent.columns">', '<dt style="width:{[values.width*100]}%;text-align:{align};">', '<em unselectable="on"<tpl if="cls">  class="{cls}"</tpl>> {[values.tpl.apply(parent)]}</em>', '</dt>', '</tpl>', '<div class="x-clear"></div>', '</dl>', '</tpl>'),
     });
     */
-	
+
     var centerPanel = new Ext.TabPanel({
         region: 'center',
         padding: '5',
@@ -123,7 +136,7 @@ Ext.onReady(function(){
         store: new Ext.data.JsonStore({
             autoLoad: true,
             root: 'data',
-            url: '/api/event/1/questions?sort=sequence&dir=asc&start=0&limit=100',
+            url: '/api/event/' + event_id + '/questions?sort=sequence&dir=asc&start=0&limit=100',
             fields: ['event_question_id', 'question_id', 'round_number', 'sequence', 'start_timestamp', 'close_timestamp', {
                 name: 'question',
                 mapping: 'question.question'
@@ -203,7 +216,7 @@ Ext.onReady(function(){
         items: [northPanel, southPanel, westPanel, centerPanel]
     });
     viewport.render('main');
-    
+
     var updateCountdown = function(id, event_question_id, total, deadline){
         var now = new Date().getTime() / 1000;
         var countdown = Math.round(deadline - now);
@@ -474,11 +487,11 @@ function user_list_updated(data){
         }
 
 		user_data.push(user);
-        
+
         if (!user.roll_call_ackd) {
             not_ready++;
         }
-        
+
         user_list += '<tr><td>' + user.name + '</td><td>' + user.score + '</td><td>';
         if (user.roll_call_ackd) {
             user_list += 'OK';
