@@ -130,14 +130,14 @@ function round_started(data){
     
     $('#question_text').html(data.question);
     
-    // Redraw equations
-    MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
-    
 	$('#results_list').empty();
     $('.panel').hide();
     $('#question_panel').show();
 	$('#results_list').empty().show();
     $('#answer input').val('').focus();
+    
+    // Redraw equations
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
 }
 
 function answer_submitted(data){

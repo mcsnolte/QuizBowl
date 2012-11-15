@@ -41,10 +41,10 @@ function round_started(data){
 	
 	$('#results_list').empty();
     
+    $('#game_board').fadeIn();
+    
     // Redraw equations
     MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
-    
-    $('#game_board').fadeIn();
 }
 
 function answer_submitted(data){
@@ -80,11 +80,10 @@ function results_revealed(data){
 		$('#results_panel table#points tbody').append(tr);
     }
 
+	$('#results_panel').fadeIn();
+
     // Redraw equations
     MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
-
-	$('#results_panel').fadeIn();
-    
 }
 
 //////////////////////////////////////
