@@ -6,6 +6,7 @@
 		</script>
 		<link rel="stylesheet" type="text/css" href="http://extjs-public.googlecode.com/svn/tags/extjs-3.4.0/release/resources/css/ext-all.css" />
 		<link rel="stylesheet" type="text/css" href="http://extjs-public.googlecode.com/svn/tags/extjs-3.4.0/release/examples/ux/css/Spinner.css" />
+		<link rel="stylesheet" type="text/css" href="http://extjs-public.googlecode.com/svn/tags/extjs-3.4.0/release/examples/ux/statusbar/css/statusbar.css" />
 		<link rel="stylesheet" type="text/css" href="/static/css/admin.css" />
 		<script type="text/javascript" src="http://extjs-public.googlecode.com/svn/tags/extjs-3.4.0/release/adapter/ext/ext-base.js">
 		</script>
@@ -16,6 +17,8 @@
 		<script type="text/javascript" src="http://extjs-public.googlecode.com/svn/tags/extjs-3.4.0/release/examples/ux/SpinnerField.js">
 		</script>
 		<script type="text/javascript" src="http://extjs-public.googlecode.com/svn/tags/extjs-3.4.0/release/examples/ux/CheckColumn.js">
+		</script>
+		<script type="text/javascript" src="http://extjs-public.googlecode.com/svn/tags/extjs-3.4.0/release/examples/ux/statusbar/StatusBar.js">
 		</script>
 		<script type="text/javascript" src= "http://cdn.mathjax.org/mathjax/latest/MathJax.js">
 			MathJax.Hub.Config({

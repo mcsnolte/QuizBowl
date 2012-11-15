@@ -112,8 +112,8 @@ Ext.onReady(function(){
         title: 'Slides',
         region: 'south',
         split: true,
-        height: 100,
-        minSize: 100,
+        height: 124,
+        minSize: 124,
         maxSize: 200,
         collapsible: true,
         margins: '0',
@@ -129,7 +129,18 @@ Ext.onReady(function(){
             overClass: 'x-view-over',
             itemSelector: 'div.thumb-wrap',
             emptyText: 'No slides to display'
-        })]
+        })],
+        bbar: new Ext.ux.StatusBar({
+            id: 'basic-statusbar',
+
+            // defaults to use when the status is cleared:
+            defaultText: '',
+            //defaultIconCls: 'default-icon',
+
+            // values to set initially:
+            text: 'Ready',
+            iconCls: 'x-status-valid',
+		})
     });
     var questionList = new Ext.list.ListView({
         id: 'question-list',
@@ -509,7 +520,21 @@ function user_list_updated(data){
     user_list += '</table>';
     Ext.ComponentMgr.get('roll-call-tab').setTitle('Roll Call (' + not_ready + ')');
     Ext.fly('roll_call').update(user_list);
-	
+
+    var sb = Ext.getCmp('basic-statusbar');
+	if ( not_ready > 0 ) {
+        sb.setStatus({
+            text: not_ready + ' teams are still not ready',
+            iconCls: 'x-status-error',
+        });
+	}
+	else {
+        sb.setStatus({
+            text: 'Ready',
+            iconCls: 'x-status-valid',
+        });
+	}
+
 	//var userStore = Ext.StoreMgr.get('user-list-store');
 	//userStore.loadData(user_data);
 }
