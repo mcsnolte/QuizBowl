@@ -1,7 +1,7 @@
 Ext.onReady(function(){
     Ext.QuickTips.init();
     var pageParameters = Ext.urlDecode(window.location.href.split('?')[1]);
-	var event_id = pageParameters.event_id || 1;
+    var event_id = pageParameters.event_id || 1;
     //Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
     var northPanel = new Ext.BoxComponent({
         region: 'north',
@@ -17,35 +17,35 @@ Ext.onReady(function(){
         success: function(response, opts) {
            var obj = Ext.decode(response.responseText);
            console.dir(obj);
-		   northPanel.getContentTarget().update('<h1>Administration Screen</h1><h3>'+obj.data.name+'</h3>');
+           northPanel.getContentTarget().update('<h1>Administration Screen</h1><h3>'+obj.data.name+'</h3>');
         },
         failure: function(response, opts) {
-			Ext.Msg.alert('Event not found', 'Event #' + event_id + ' does not exist.');
+           Ext.Msg.alert('Event not found', 'Event #' + event_id + ' does not exist.');
         }
     });
 
-	/*
-	var userList = new Ext.list.ListView({
+    /*
+    var userList = new Ext.list.ListView({
         id: 'user-list',
         store: new Ext.data.ArrayStore({
-			id: 'user-list-store',
-			data: [
-				{
-					name: 'Steve',
-					score: 10,
-					roll_call_ackd: 1
-				}
-			],
-	        fields: [
-				'name',
-				'session_id',
-				'connected',
-				'roll_call_ackd',
-				'is_admin',
-				'answer',
-				'score'
-			],
-	    }),
+            id: 'user-list-store',
+            data: [
+                {
+                    name: 'Steve',
+                    score: 10,
+                    roll_call_ackd: 1
+                }
+            ],
+            fields: [
+                'name',
+                'session_id',
+                'connected',
+                'roll_call_ackd',
+                'is_admin',
+                'answer',
+                'score'
+            ],
+        }),
         singleSelect: true,
         emptyText: 'No players registered',
         reserveScrollOffset: true,
@@ -60,7 +60,7 @@ Ext.onReady(function(){
         }, {
             header: 'Status',
             width: 0.4,
-			dataIndex: 'roll_call_ackd'
+            dataIndex: 'roll_call_ackd'
         }],
         tpl: new Ext.XTemplate('<tpl for="rows">', '<dl class="x-grid3-row {[xindex % 2 === 0 ? "" :  "x-grid3-row-alt"]}">', '<tpl for="parent.columns">', '<dt style="width:{[values.width*100]}%;text-align:{align};">', '<em unselectable="on"<tpl if="cls">  class="{cls}"</tpl>> {[values.tpl.apply(parent)]}</em>', '</dt>', '</tpl>', '<div class="x-clear"></div>', '</dl>', '</tpl>'),
     });
@@ -85,7 +85,7 @@ Ext.onReady(function(){
                 region: 'center',
                 border: false,
                 autoScroll: true,
-				//items: userList,
+                //items: userList,
                 html: '<div id="roll_call"></div>'
             }), new Ext.form.FormPanel({
                 region: 'east',
@@ -140,10 +140,11 @@ Ext.onReady(function(){
             // values to set initially:
             text: 'Ready',
             iconCls: 'x-status-valid',
-		})
+        })
     });
     var questionList = new Ext.grid.GridPanel({
         id: 'question-list',
+    stripeRows: true,
         store: new Ext.data.JsonStore({
             autoLoad: true,
             root: 'data',
@@ -170,26 +171,25 @@ Ext.onReady(function(){
                 }
             }
         }),
-		sm: new Ext.grid.RowSelectionModel({singleSelect:true}),
+        sm: new Ext.grid.RowSelectionModel({singleSelect:true}),
         //singleSelect: true,
         //emptyText: 'No questions to display',
         //reserveScrollOffset: true,
-		colModel: new Ext.grid.ColumnModel({
-			defaults: {
-				width: 30,
-				sortable: true
-			},
-			columns: [
-				{header: 'Seq', width: 40, dataIndex: 'sequence'},
-				{header: 'Rnd', width: 40, dataIndex: 'round_number'},
-				{header: 'Question', width: 200, dataIndex: 'question'},
-				{header: 'Level', width: 50, dataIndex: 'level_id'}
-			]
-		}),
-		viewConfig: {
-			forceFit: true
-		},
-        //tpl: new Ext.XTemplate('<tpl for="rows">', '<dl class="x-grid3-row {[xindex % 2 === 0 ? "" :  "x-grid3-row-alt"]}">', '<tpl for="parent.columns">', '<dt style="width:{[values.width*100]}%;text-align:{align};">', '<em unselectable="on"<tpl if="cls">  class="{cls}"</tpl>> {[values.tpl.apply(parent)]}</em>', '</dt>', '</tpl>', '<div class="x-clear"></div>', '</dl>', '</tpl>'),
+        colModel: new Ext.grid.ColumnModel({
+            defaults: {
+                width: 30,
+                sortable: true
+            },
+            columns: [
+                {header: 'Seq', width: 40, dataIndex: 'sequence'},
+                {header: 'Rnd', width: 40, dataIndex: 'round_number'},
+                {header: 'Question', width: 200, dataIndex: 'question'},
+                {header: 'Level', width: 50, dataIndex: 'level_id'}
+            ]
+        }),
+        viewConfig: {
+            forceFit: true,
+        },
         listeners: {
             rowdblclick: function(grid, idx, e){
                 var rec = grid.store.getAt(idx);
@@ -204,9 +204,9 @@ Ext.onReady(function(){
                     MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
                 }
             },
-			sortchange: function(obj, records){
-				MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
-			}
+            sortchange: function(obj, records){
+                MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+            }
         }
     });
     var westPanel = new Ext.Panel({
@@ -253,9 +253,9 @@ Ext.onReady(function(){
         var question = '<h1>Question:</h1><p>' + rec.get('question') + '</p>';
         var answer = '<h1>Answer:</h1><p>' + rec.get('answer') + '</p>';
         var properties = '<h1>Properties:</h1><p>'
-			+ "Points: " + (rec.get('points') ? rec.get('points') : '0')
-			+ "; Level: " + rec.get('level_id')
-			 + '</p>';
+            + "Points: " + (rec.get('points') ? rec.get('points') : '0')
+            + "; Level: " + rec.get('level_id')
+             + '</p>';
         var explanation = '<h1>Explanation:</h1><p>' + (rec.get('explanation') || 'n/a') + '</p>';
         var event_question_id = rec.get('event_question_id');
         var col_id = Ext.id();
@@ -274,7 +274,7 @@ Ext.onReady(function(){
             restful: true,
             proxy: new Ext.data.HttpProxy({
                 url: '/api/submission?event_question_id=' + event_question_id,
-				api: {
+                api: {
                     update: '/api/submission'
                 }
             }),
@@ -315,7 +315,7 @@ Ext.onReady(function(){
                 border: false,
                 autoScroll: true,
                 html: question + properties,
-				width: '25%'
+                width: '25%'
             }), new Ext.Panel({
                 region: 'center',
                 border: false,
@@ -339,7 +339,7 @@ Ext.onReady(function(){
                         }, {
                             xtype: 'button',
                             text: 'Start',
-							tooltip: "Show the question and collect submissions.",
+                            tooltip: "Show the question and collect submissions.",
                             width: 60,
                             handler: function(){
                                 Ext.fly('close_' + id).update('Not closed yet');
@@ -351,17 +351,17 @@ Ext.onReady(function(){
                             xtype: 'button',
                             text: 'Points',
                             width: 60,
-							tooltip: "Auto assign points based on correct answers and the points multiplier.",
+                            tooltip: "Auto assign points based on correct answers and the points multiplier.",
                             handler: function(){
-								var eq_id = rec.get('event_question_id');
+                                var eq_id = rec.get('event_question_id');
                                 socket.emit('calc points', eq_id, function(data){
-									refresh_submission_grid(eq_id);
-								} );
+                                    refresh_submission_grid(eq_id);
+                                } );
                             }
                         }, {
                             xtype: 'button',
                             text: 'Results',
-							tooltip: "Show the answer and points to everyone.",
+                            tooltip: "Show the answer and points to everyone.",
                             width: 60,
                             handler: function(){
                                 socket.emit('reveal results', rec.get('event_question_id') );
@@ -377,7 +377,7 @@ Ext.onReady(function(){
                         items: [countdown, {
                             xtype: 'button',
                             text: 'Close',
-							tooltip: "Close the round after the desired number of seconds.",
+                            tooltip: "Close the round after the desired number of seconds.",
                             width: 80,
                             handler: function(){
                                 var total = countdown.getValue();
@@ -394,7 +394,7 @@ Ext.onReady(function(){
                         }, {
                             xtype: 'button',
                             text: 'Cancel',
-							tooltip: "Cancel the round from closing.",
+                            tooltip: "Cancel the round from closing.",
                             width: 80,
                             handler: function(){
                                 runner.stopAll();
@@ -404,6 +404,7 @@ Ext.onReady(function(){
                 }]
             }), new Ext.grid.EditorGridPanel({
                 id: 'submission-grid-' + event_question_id,
+    stripeRows: true,
                 region: 'south',
                 height: 300,
                 clicksToEdit: 1,
@@ -446,9 +447,9 @@ Ext.onReady(function(){
                         })
                     }]
                 }),
-				viewConfig: {
-					forceFit: true
-				},
+                viewConfig: {
+                    forceFit: true
+                },
                 bbar: new Ext.PagingToolbar({
                     pageSize: 25,
                     store: submissions_store,
@@ -467,16 +468,16 @@ function init_admin(session_id){
 
     // socket.io specific code
     socket = io.connect();
-    
+
     socket.on('answer submitted', answer_submitted);
-    
+
     socket.on('user list updated', user_list_updated);
-    
+
     socket.emit('register', session_id, function(res){
         if (!res.success) {
             alert('Not connected successfully!');
         }
-        else 
+        else
             if (res.round_started) {
                 Ext.Msg.alert('In Progress Notification', 'Question #' + res.round_data.sequence + ' is already in progress.');
             }
@@ -484,12 +485,12 @@ function init_admin(session_id){
 }
 
 function answer_submitted(data){
-	refresh_submission_grid(data.event_question_id);
+    refresh_submission_grid(data.event_question_id);
 }
 
 function refresh_submission_grid(event_question_id) {
     var grid = Ext.ComponentMgr.get('submission-grid-' + event_question_id);
-    if (grid == undefined) 
+    if (grid == undefined)
         return;
     grid.store.reload();
 }
@@ -498,15 +499,15 @@ function user_list_updated(data){
     var not_ready = 0;
     var user_list = '<table><tr><th>Team</th><th>Score</th><th>Status</th></tr>';
     var users = data.users;
-	var users_by_score = data.users_by_score;
-	var user_data = [];
+    var users_by_score = data.users_by_score;
+    var user_data = [];
     for ( var i = 0; i < users_by_score.length; i++ ) {
-		var user = users[users_by_score[i]];
+        var user = users[users_by_score[i]];
         if (user.is_admin) {
             continue;
         }
 
-		user_data.push(user);
+        user_data.push(user);
 
         if (!user.roll_call_ackd) {
             not_ready++;
@@ -531,19 +532,19 @@ function user_list_updated(data){
     Ext.fly('roll_call').update(user_list);
 
     var sb = Ext.getCmp('basic-statusbar');
-	if ( not_ready > 0 ) {
+    if ( not_ready > 0 ) {
         sb.setStatus({
             text: not_ready + ' teams are still not ready',
             iconCls: 'x-status-error',
         });
-	}
-	else {
+    }
+    else {
         sb.setStatus({
             text: 'Ready',
             iconCls: 'x-status-valid',
         });
-	}
+    }
 
-	//var userStore = Ext.StoreMgr.get('user-list-store');
-	//userStore.loadData(user_data);
+    //var userStore = Ext.StoreMgr.get('user-list-store');
+    //userStore.loadData(user_data);
 }
