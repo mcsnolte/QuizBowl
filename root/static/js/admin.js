@@ -257,6 +257,7 @@ Ext.onReady(function(){
 			+ "Points: " + (rec.get('points') ? rec.get('points') : '0')
 			+ "; Level: " + rec.get('level_id')
 			 + '</p>';
+        var explanation = '<h1>Explanation:</h1><p>' + (rec.get('explanation') || 'n/a') + '</p>';
         var event_question_id = rec.get('event_question_id');
         var col_id = Ext.id();
         var countdown = new Ext.ux.form.SpinnerField({
@@ -311,10 +312,16 @@ Ext.onReady(function(){
             title: 'Question ' + rec.get('sequence'),
             layout: 'border',
             items: [new Ext.Panel({
+                region: 'west',
+                border: false,
+                autoScroll: true,
+                html: question + properties,
+				width: '25%'
+            }), new Ext.Panel({
                 region: 'center',
                 border: false,
                 autoScroll: true,
-                html: question + answer + properties
+                html: answer + explanation
             }), new Ext.form.FormPanel({
                 region: 'east',
                 width: 300,
