@@ -142,7 +142,7 @@ Ext.onReady(function(){
             iconCls: 'x-status-valid',
 		})
     });
-    var questionList = new Ext.list.ListView({
+    var questionList = new Ext.grid.GridPanel({
         id: 'question-list',
         store: new Ext.data.JsonStore({
             autoLoad: true,
@@ -170,33 +170,29 @@ Ext.onReady(function(){
                 }
             }
         }),
-        singleSelect: true,
-        emptyText: 'No questions to display',
-        reserveScrollOffset: true,
-        columns: [{
-            header: 'Seq',
-            width: 0.1,
-            dataIndex: 'sequence'
-        }, {
-            header: 'Rnd',
-            width: 0.1,
-            dataIndex: 'round_number'
-        }, {
-            header: 'Question',
-            width: 0.7,
-            dataIndex: 'question',
-            tpl: '<p style="white-space:normal">{question}</p>'
-        }, {
-            header: 'Level',
-            width: 0.1,
-            dataIndex: 'level_id',
-        }],
-        tpl: new Ext.XTemplate('<tpl for="rows">', '<dl class="x-grid3-row {[xindex % 2 === 0 ? "" :  "x-grid3-row-alt"]}">', '<tpl for="parent.columns">', '<dt style="width:{[values.width*100]}%;text-align:{align};">', '<em unselectable="on"<tpl if="cls">  class="{cls}"</tpl>> {[values.tpl.apply(parent)]}</em>', '</dt>', '</tpl>', '<div class="x-clear"></div>', '</dl>', '</tpl>'),
+		sm: new Ext.grid.RowSelectionModel({singleSelect:true}),
+        //singleSelect: true,
+        //emptyText: 'No questions to display',
+        //reserveScrollOffset: true,
+		colModel: new Ext.grid.ColumnModel({
+			defaults: {
+				width: 30,
+				sortable: true
+			},
+			columns: [
+				{header: 'Seq', width: 40, dataIndex: 'sequence'},
+				{header: 'Rnd', width: 40, dataIndex: 'round_number'},
+				{header: 'Question', width: 200, dataIndex: 'question'},
+				{header: 'Level', width: 50, dataIndex: 'level_id'}
+			]
+		}),
+		viewConfig: {
+			forceFit: true
+		},
+        //tpl: new Ext.XTemplate('<tpl for="rows">', '<dl class="x-grid3-row {[xindex % 2 === 0 ? "" :  "x-grid3-row-alt"]}">', '<tpl for="parent.columns">', '<dt style="width:{[values.width*100]}%;text-align:{align};">', '<em unselectable="on"<tpl if="cls">  class="{cls}"</tpl>> {[values.tpl.apply(parent)]}</em>', '</dt>', '</tpl>', '<div class="x-clear"></div>', '</dl>', '</tpl>'),
         listeners: {
-            render: function(view){
-            },
-            dblclick: function(view, idx, node, e){
-                var rec = view.store.getAt(idx);
+            rowdblclick: function(grid, idx, e){
+                var rec = grid.store.getAt(idx);
                 var id = 'event-question-' + rec.get('event_question_id');
                 if (centerPanel.findById(id)) {
                     centerPanel.setActiveTab(id);
@@ -207,7 +203,10 @@ Ext.onReady(function(){
                     centerPanel.doLayout();
                     MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
                 }
-            }
+            },
+			sortchange: function(obj, records){
+				MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+			}
         }
     });
     var westPanel = new Ext.Panel({
@@ -447,6 +446,9 @@ Ext.onReady(function(){
                         })
                     }]
                 }),
+				viewConfig: {
+					forceFit: true
+				},
                 bbar: new Ext.PagingToolbar({
                     pageSize: 25,
                     store: submissions_store,
