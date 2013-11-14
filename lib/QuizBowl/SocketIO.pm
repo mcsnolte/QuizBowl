@@ -133,6 +133,7 @@ sub run {
 		$self->on( 'reveal results'    => \&reveal_results );
 		$self->on( 'reset question'    => \&reset_question );
 		$self->on( 'disconnect'        => \&disconnect );
+		$self->on( 'ping'              => \&ping );
 	};
 }
 
@@ -467,6 +468,14 @@ sub disconnect {
 			);
 		}
 	);
+}
+
+sub ping {
+    my $self = shift;
+    my $msg  = shift;
+    my $cb   = shift;
+
+    $cb->( { success => 1, } );
 }
 
 sub is_correct {
