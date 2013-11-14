@@ -131,6 +131,7 @@ sub run {
 		$self->on( 'submit answer'     => \&submit_answer );
 		$self->on( 'calc points'       => \&calc_points );
 		$self->on( 'reveal results'    => \&reveal_results );
+		$self->on( 'reset question'    => \&reset_question );
 		$self->on( 'disconnect'        => \&disconnect );
 	};
 }
@@ -416,6 +417,33 @@ sub reveal_results {
 			results      => \@results
 		}
 	);
+}
+
+sub reset_question {
+	my $self              = shift;
+	my $event_question_id = shift;
+	my $cb                = shift;
+
+	my $eq = QuizBowl::SocketIO->event->questions->search( { event_question_id => $event_question_id } )->first();
+
+	unless ( defined $eq ) {
+		$cb->( { not_found => 1 } );
+		return;
+	}
+
+	$eq->update(
+		{
+			start_timestamp => undef,
+			close_timestamp => undef,
+		}
+	);
+
+	$eq->submissions->delete();
+
+	QuizBowl::SocketIO->_set_scores();
+	emit_user_list($self);
+
+    $cb->( { success => 1, } );
 }
 
 sub disconnect {

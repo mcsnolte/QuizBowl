@@ -323,7 +323,7 @@ Ext.onReady(function(){
                 html: answer + explanation
             }), new Ext.form.FormPanel({
                 region: 'east',
-                width: 300,
+                width: 340,
                 align: 'right',
                 border: false,
                 labelWidth: 20,
@@ -365,6 +365,23 @@ Ext.onReady(function(){
                             width: 60,
                             handler: function(){
                                 socket.emit('reveal results', rec.get('event_question_id') );
+                            }
+                        }, {
+                            xtype: 'button',
+                            text: 'Reset',
+                            tooltip: "Reset this question and clear submissions.",
+                            width: 60,
+                            handler: function(){
+                                Ext.Msg.confirm( "Confirm", "Really reset and clear all submissions?", function(btn){
+                                    if ( btn == 'yes' ) {
+                                        var eq_id = rec.get('event_question_id');
+                                        socket.emit('reset question', eq_id, function(){
+                                            refresh_submission_grid(eq_id);
+                                            Ext.fly('start_' + id).update('Not started yet');
+                                            Ext.fly('close_' + id).update('Not closed yet');
+                                        });
+                                    }
+                                });
                             }
                         }]
                     })]
