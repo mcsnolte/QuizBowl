@@ -9,3 +9,15 @@
 
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
   <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
+  <script src="/static/js/moment.js"></script>
+  <script src="/static/js/bootstrap-datetimepicker.min.js"></script>
+
+<script type="text/javascript">
+  $(function() {
+    $('.input-group.date').datetimepicker({
+      language: 'en',
+      pick12HourFormat: true
+    });
+  });
+</script>
+

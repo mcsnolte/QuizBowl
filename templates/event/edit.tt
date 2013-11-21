@@ -1,1 +1,42 @@
-EDIT [% event.id %]
+<!DOCTYPE html>
+<html lang="en">
+
+[% title = 'Edit Event' %]
+[% INCLUDE sub/head.tt %]
+
+  <body>
+[% INCLUDE sub/header.tt %]
+	<div class="page-header">
+		<h1>Edit Event</h1>
+	</div>
+
+<form role="form" method="post">
+  <div class="form-group">
+    <label for="name">Name</label>
+    <input type="text" class="form-control" name="name" id="name" placeholder="Change event name" value="[% event.name | html %]" required autofocus>
+  </div>
+
+  <div class="form-group">
+     <label for="start_time">Start Time</label>
+     <div class='input-group date' id='start_time'>
+        <input data-format="YYYY-MM-DDThh:mm A/PM"  type='text' class="form-control" name="start_time" id="start_time" placeholder="Change event start time" value="[% event.start_time | html %]" required>
+        <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+        </span>
+     </div>
+  </div>
+
+  <div class="form-group">
+     <label for="end_time">End Time</label>
+     <div class='input-group date' id='end_time'>
+        <input data-format="YYYY-MM-DDThh:mm A/PM"  type='text' class="form-control" name="end_time" id="end_time" placeholder="Change event end time" value="[% event.end_time | html %]" required>
+        <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+        </span>
+     </div>
+  </div>
+
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+[% INCLUDE sub/footer.tt %]
+  </body>
+</html>
