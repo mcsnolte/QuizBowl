@@ -35,6 +35,12 @@ function init_player(args) {
         }
     });
     
+	window.setInterval( function(){
+		socket.emit( 'ping', new Date(), function(r){
+			console.log('ping');
+		});
+	}, 10000 );
+
     _init_page(socket);
 }
 

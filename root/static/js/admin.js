@@ -525,6 +525,12 @@ function init_admin(args){
                 Ext.Msg.alert('In Progress Notification', 'Question #' + res.round_data.sequence + ' is already in progress.');
             }
     });
+
+	window.setInterval( function(){
+		socket.emit( 'ping', new Date(), function(r){
+			console.log('ping');
+		});
+	}, 10000 );
 }
 
 function answer_submitted(data){
