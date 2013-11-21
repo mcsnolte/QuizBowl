@@ -1,7 +1,12 @@
-Ext.onReady(function(){
+QuizBowl = {
+    session_id: undefined,
+    event_id: undefined,
+    name: undefined,
+    socket: undefined
+};
+
+function build_admin(event_id){
     Ext.QuickTips.init();
-    var pageParameters = Ext.urlDecode(window.location.href.split('?')[1]);
-    var event_id = pageParameters.event_id || 1;
     //Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
     var northPanel = new Ext.BoxComponent({
         region: 'north',
@@ -13,11 +18,11 @@ Ext.onReady(function(){
         }
     });
     Ext.Ajax.request({
-        url: '/api/event/' + pageParameters.event_id,
+        url: '/api/event/' + event_id,
         success: function(response, opts) {
            var obj = Ext.decode(response.responseText);
            console.dir(obj);
-           northPanel.getContentTarget().update('<h1>Administration Screen</h1><h3>'+obj.data.name+'</h3>');
+           northPanel.getContentTarget().update('<h1>'+obj.data.name+'</h1><p><a href="/event">Return to Events</a></p>');
         },
         failure: function(response, opts) {
            Ext.Msg.alert('Event not found', 'Event #' + event_id + ' does not exist.');
@@ -478,10 +483,14 @@ Ext.onReady(function(){
         });
         return panel;
     }
-});
+}
 
+function init_admin(args){
 
-function init_admin(session_id){
+    QuizBowl.session_id = args.session_id;
+    QuizBowl.event_id = args.event_id;
+
+	build_admin(args.event_id);
 
     // socket.io specific code
     socket = io.connect();
@@ -490,7 +499,24 @@ function init_admin(session_id){
 
     socket.on('user list updated', user_list_updated);
 
-    socket.emit('register', session_id, function(res){
+	socket.on('disconnect', function(){
+		console.log('diconnected at ' + new Date());
+    	Ext.getCmp('basic-statusbar').setStatus({
+            text: 'Disconnected',
+            iconCls: 'x-status-error'
+        });
+	});
+
+    socket.on('reconnect', function(){
+		console.log('reconnected at ' + new Date());
+        socket.emit('register', QuizBowl.session_id, QuizBowl.event_id);
+    	Ext.getCmp('basic-statusbar').setStatus({
+            text: 'Reconnected',
+            iconCls: 'x-status-valid'
+        });
+    });
+
+    socket.emit('register', args.session_id, args.event_id, function(res){
         if (!res.success) {
             alert('Not connected successfully!');
         }
@@ -499,12 +525,6 @@ function init_admin(session_id){
                 Ext.Msg.alert('In Progress Notification', 'Question #' + res.round_data.sequence + ' is already in progress.');
             }
     });
-
-    window.setInterval( function(){
-        socket.emit( 'ping', new Date(), function(r){
-		    console.log('ping');
-        });
-    }, 10000 );
 }
 
 function answer_submitted(data){
@@ -558,13 +578,13 @@ function user_list_updated(data){
     if ( not_ready > 0 ) {
         sb.setStatus({
             text: not_ready + ' teams are still not ready',
-            iconCls: 'x-status-error',
+            iconCls: 'x-status-error'
         });
     }
     else {
         sb.setStatus({
             text: 'Ready',
-            iconCls: 'x-status-valid',
+            iconCls: 'x-status-valid'
         });
     }
 

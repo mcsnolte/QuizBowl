@@ -1,0 +1,32 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+[% title = 'Password help' %]
+[% INCLUDE sub/head.tt %]
+
+  <body>
+
+[% INCLUDE sub/header.tt %]
+
+	<div class="page-header">
+		<h1>Password help</h1>
+	</div>
+
+	 [% IF c.req.param('sent') %]
+	 <div class="alert alert-info">
+	 	Check your email for instructions.
+	 </div>
+	 [% ELSE %]
+      <form class="form-signin" method="post">
+        <input type="text" name="email" class="form-control" placeholder="Email address" value="[% c.req.param('email') | html %]" required autofocus>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Email me</button>
+      </form>
+
+	 [% END %]
+
+[% INCLUDE sub/footer.tt %]
+
+  </body>
+</html>
+

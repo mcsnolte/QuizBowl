@@ -4,7 +4,8 @@ package QuizBowl::Schema;
 
 use Moose;
 use MooseX::NonMoose;
-extends 'DBIx::Class::Schema';
+#extends 'DBIx::Class::Schema';
+extends 'Cadillac::Schema';
 
 use QuizBowl::QueryProfiler;
 use QuizBowl::Config;

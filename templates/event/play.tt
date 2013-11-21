@@ -1,3 +1,4 @@
+[% USE Gravatar -%]
 <!DOCTYPE html>
 <html>
 	<head>
@@ -11,8 +12,11 @@
 		</script>
 		<script>
 			$(document).ready(function(){
-			    init_player('[% c.sessionid %]');
-			})
+				init_player({
+					"session_id": "[% c.sessionid %]",
+					"event_id":   "[% event.id %]"
+				});
+			});
 		</script>
 		<script type="text/javascript" src= "http://cdn.mathjax.org/mathjax/latest/MathJax.js">
 			MathJax.Hub.Config({
@@ -33,28 +37,29 @@
 	<body>
 		<div id="header">
 			<div id="event_info">
-				<h1>GMLSAL</h1>
-				<h2>Math Bowl 2011</h2>
+				<h1>Quiz Bowl</h1>
+				<h2>[% event.name | html %]</h2>
 			</div>
 			<div id="round_info">
 				<h1 id="round_number"></h1>
 				<h2 id="question_level"></h2>
 			</div>
 			<div id="team_info">
-				<h1>[% c.user.school.name | html %]</h1>
-				<h2>[% c.user.school.mascot | html %]</h2>
+				<img src="[% Gravatar( 'email' => c.user.email ) | html %]" alt="[% c.user.name | html %]" class="img-thumbnail" />
 			</div>
 		</div>
 		<div id="waiting_panel" class="panel">
 			<div id="roll_call">
 				<table>
+					<col width="10%" />
 					<col width="40%" />
-					<col width="20%" />
+					<col width="10%" />
 					<col width="40%" />
 					<thead>
 						<tr>
+							<th></th>
 							<th>
-								School
+								Name
 							</th>
 							<th>
 								Score
@@ -95,13 +100,15 @@
 			<div id="results_message">Waiting...</div>
 			<div id="results_list"></div>
 			<table>
+				<col width="10%" />
 				<col width="40%" />
 				<col width="20%" />
 				<col width="40%" />
 				<thead>
 					<tr>
+						<th></th>
 						<th>
-							School
+							Name
 						</th>
 						<th>
 							Time

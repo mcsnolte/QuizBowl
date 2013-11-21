@@ -1,7 +1,15 @@
 ---
 data:
   0:
-    email: ""
+    email: "system.account@example.com"
     first_name: System
     last_name: Account
+    password: "blank"
+    is_admin: 0
+  #1:
+  #  email: "iam@stevenolte.com"
+  #  first_name: Steve
+  #  last_name: Nolte
+  #  password: "{SSHA}xGMJzb1hFnhinwAnkcpUwUAdt77eBFXq"
+  #  is_admin: 1
 

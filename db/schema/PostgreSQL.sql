@@ -10,6 +10,13 @@ SET client_min_messages = warning;
 SET escape_string_warning = off;
 
 --
+-- Name: audit; Type: SCHEMA; Schema: -; Owner: -
+--
+
+CREATE SCHEMA audit;
+
+
+--
 -- Name: plperl; Type: PROCEDURAL LANGUAGE; Schema: -; Owner: -
 --
 
@@ -85,94 +92,97 @@ CREATE TYPE citext (
 
 
 --
--- Name: cube; Type: SHELL TYPE; Schema: public; Owner: -
+-- Name: audit_table(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE TYPE cube;
+CREATE FUNCTION audit_table() RETURNS trigger
+    LANGUAGE plperl
+    AS $_X$
+  # Start perl
+  my $row;
 
+  if( $_TD->{event} eq 'INSERT' or $_TD->{event} eq 'UPDATE' ) {
+    $row = $_TD->{new};
+  }
+  elsif( $_TD->{event} ) {
+    $row = $_TD->{old};
+  }
+  else {
+    # Other events should not occur
+    return 'SKIP';
+  }
 
---
--- Name: cube_in(cstring); Type: FUNCTION; Schema: public; Owner: -
---
+  # Add the action type
+  $row->{audit_action} = substr $_TD->{event}, 0, 1;
 
-CREATE FUNCTION cube_in(cstring) RETURNS cube
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/cube', 'cube_in';
+  my $quote = sub {
+    my $val = shift;
+    return 'NULL' unless defined $val;
+	# Double up backslashes and single quotes
+    $val =~ s/[\\']/$&$&/g;
+	# Make the whole value an escape string
+    "E'$val'";
+  };
 
+  # Copy the data into arrays
+  my @cols = keys %$row;
+  my @vals = map { $quote->( $row->{$_} ) } @cols;
 
---
--- Name: cube_out(cube); Type: FUNCTION; Schema: public; Owner: -
---
+  # Add the user ID
+  push @cols, 'audit_user_id';
+  push @vals, "cadillac_user()";
 
-CREATE FUNCTION cube_out(cube) RETURNS cstring
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/cube', 'cube_out';
+  # Add timestamp
+  push @cols, "audit_timestamp";
+  push @vals, "statement_timestamp()";
 
+  # Add login record ID
+  push @cols, 'audit_login_id';
+  push @vals, 'cadillac_login_id()';
 
---
--- Name: cube; Type: TYPE; Schema: public; Owner: -
---
+  my $q = sprintf 'INSERT INTO audit.audit_%s(%s) VALUES (%s)',
+    $_TD->{table_name},
+    join(',', @cols),
+    join(',', @vals),
+    ;
 
-CREATE TYPE cube (
-    INTERNALLENGTH = variable,
-    INPUT = cube_in,
-    OUTPUT = cube_out,
-    ALIGNMENT = double,
-    STORAGE = plain
-);
+  spi_exec_query $q;
 
-
---
--- Name: TYPE cube; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON TYPE cube IS 'multi-dimensional cube ''(FLOAT-1, FLOAT-2, ..., FLOAT-N), (FLOAT-1, FLOAT-2, ..., FLOAT-N)''';
-
-
---
--- Name: cube_dim(cube); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION cube_dim(cube) RETURNS integer
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/cube', 'cube_dim';
-
-
---
--- Name: cube_distance(cube, cube); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION cube_distance(cube, cube) RETURNS double precision
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/cube', 'cube_distance';
-
-
---
--- Name: cube_is_point(cube); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION cube_is_point(cube) RETURNS boolean
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/cube', 'cube_is_point';
+  return undef;  # Let the original action procede unmodified
+  # End perl
+$_X$;
 
 
 --
--- Name: earth(); Type: FUNCTION; Schema: public; Owner: -
+-- Name: cadillac_login_id(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION earth() RETURNS double precision
-    LANGUAGE sql IMMUTABLE
-    AS $$SELECT '6378168'::float8$$;
+CREATE FUNCTION cadillac_login_id() RETURNS integer
+    LANGUAGE plpgsql
+    AS $$
+  BEGIN
+    RETURN CAST( current_setting('cadillac.login_record') AS integer);
+  EXCEPTION
+    WHEN OTHERS THEN
+      RETURN NULL;
+  END;
+$$;
 
 
 --
--- Name: earth; Type: DOMAIN; Schema: public; Owner: -
+-- Name: cadillac_user(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE DOMAIN earth AS cube
-	CONSTRAINT not_3d CHECK ((cube_dim(VALUE) <= 3))
-	CONSTRAINT not_point CHECK (cube_is_point(VALUE))
-	CONSTRAINT on_surface CHECK ((abs(((cube_distance(VALUE, '(0)'::cube) / earth()) - (1)::double precision)) < 9.99999999999999955e-07::double precision));
+CREATE FUNCTION cadillac_user() RETURNS integer
+    LANGUAGE plpgsql
+    AS $$
+  BEGIN
+    RETURN CAST( current_setting('cadillac.current_user') AS integer);
+  EXCEPTION
+    WHEN OTHERS THEN
+      RETURN 0;
+  END;
+$$;
 
 
 --
@@ -293,409 +303,6 @@ CREATE FUNCTION citext_smaller(citext, citext) RETURNS citext
 
 
 --
--- Name: cube(double precision[]); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION cube(double precision[]) RETURNS cube
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/cube', 'cube_a_f8';
-
-
---
--- Name: cube(double precision); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION cube(double precision) RETURNS cube
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/cube', 'cube_f8';
-
-
---
--- Name: cube(double precision[], double precision[]); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION cube(double precision[], double precision[]) RETURNS cube
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/cube', 'cube_a_f8_f8';
-
-
---
--- Name: cube(double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION cube(double precision, double precision) RETURNS cube
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/cube', 'cube_f8_f8';
-
-
---
--- Name: cube(cube, double precision); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION cube(cube, double precision) RETURNS cube
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/cube', 'cube_c_f8';
-
-
---
--- Name: cube(cube, double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION cube(cube, double precision, double precision) RETURNS cube
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/cube', 'cube_c_f8_f8';
-
-
---
--- Name: cube_cmp(cube, cube); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION cube_cmp(cube, cube) RETURNS integer
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/cube', 'cube_cmp';
-
-
---
--- Name: FUNCTION cube_cmp(cube, cube); Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON FUNCTION cube_cmp(cube, cube) IS 'btree comparison function';
-
-
---
--- Name: cube_contained(cube, cube); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION cube_contained(cube, cube) RETURNS boolean
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/cube', 'cube_contained';
-
-
---
--- Name: FUNCTION cube_contained(cube, cube); Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON FUNCTION cube_contained(cube, cube) IS 'contained in';
-
-
---
--- Name: cube_contains(cube, cube); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION cube_contains(cube, cube) RETURNS boolean
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/cube', 'cube_contains';
-
-
---
--- Name: FUNCTION cube_contains(cube, cube); Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON FUNCTION cube_contains(cube, cube) IS 'contains';
-
-
---
--- Name: cube_enlarge(cube, double precision, integer); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION cube_enlarge(cube, double precision, integer) RETURNS cube
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/cube', 'cube_enlarge';
-
-
---
--- Name: cube_eq(cube, cube); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION cube_eq(cube, cube) RETURNS boolean
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/cube', 'cube_eq';
-
-
---
--- Name: FUNCTION cube_eq(cube, cube); Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON FUNCTION cube_eq(cube, cube) IS 'same as';
-
-
---
--- Name: cube_ge(cube, cube); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION cube_ge(cube, cube) RETURNS boolean
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/cube', 'cube_ge';
-
-
---
--- Name: FUNCTION cube_ge(cube, cube); Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON FUNCTION cube_ge(cube, cube) IS 'greater than or equal to';
-
-
---
--- Name: cube_gt(cube, cube); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION cube_gt(cube, cube) RETURNS boolean
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/cube', 'cube_gt';
-
-
---
--- Name: FUNCTION cube_gt(cube, cube); Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON FUNCTION cube_gt(cube, cube) IS 'greater than';
-
-
---
--- Name: cube_inter(cube, cube); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION cube_inter(cube, cube) RETURNS cube
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/cube', 'cube_inter';
-
-
---
--- Name: cube_le(cube, cube); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION cube_le(cube, cube) RETURNS boolean
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/cube', 'cube_le';
-
-
---
--- Name: FUNCTION cube_le(cube, cube); Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON FUNCTION cube_le(cube, cube) IS 'lower than or equal to';
-
-
---
--- Name: cube_ll_coord(cube, integer); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION cube_ll_coord(cube, integer) RETURNS double precision
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/cube', 'cube_ll_coord';
-
-
---
--- Name: cube_lt(cube, cube); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION cube_lt(cube, cube) RETURNS boolean
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/cube', 'cube_lt';
-
-
---
--- Name: FUNCTION cube_lt(cube, cube); Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON FUNCTION cube_lt(cube, cube) IS 'lower than';
-
-
---
--- Name: cube_ne(cube, cube); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION cube_ne(cube, cube) RETURNS boolean
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/cube', 'cube_ne';
-
-
---
--- Name: FUNCTION cube_ne(cube, cube); Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON FUNCTION cube_ne(cube, cube) IS 'different';
-
-
---
--- Name: cube_overlap(cube, cube); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION cube_overlap(cube, cube) RETURNS boolean
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/cube', 'cube_overlap';
-
-
---
--- Name: FUNCTION cube_overlap(cube, cube); Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON FUNCTION cube_overlap(cube, cube) IS 'overlaps';
-
-
---
--- Name: cube_size(cube); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION cube_size(cube) RETURNS double precision
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/cube', 'cube_size';
-
-
---
--- Name: cube_subset(cube, integer[]); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION cube_subset(cube, integer[]) RETURNS cube
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/cube', 'cube_subset';
-
-
---
--- Name: cube_union(cube, cube); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION cube_union(cube, cube) RETURNS cube
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/cube', 'cube_union';
-
-
---
--- Name: cube_ur_coord(cube, integer); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION cube_ur_coord(cube, integer) RETURNS double precision
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/cube', 'cube_ur_coord';
-
-
---
--- Name: earth_box(earth, double precision); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION earth_box(earth, double precision) RETURNS cube
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT cube_enlarge($1, gc_to_sec($2), 3)$_$;
-
-
---
--- Name: earth_distance(earth, earth); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION earth_distance(earth, earth) RETURNS double precision
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT sec_to_gc(cube_distance($1, $2))$_$;
-
-
---
--- Name: g_cube_compress(internal); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION g_cube_compress(internal) RETURNS internal
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/cube', 'g_cube_compress';
-
-
---
--- Name: g_cube_consistent(internal, cube, integer, oid, internal); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION g_cube_consistent(internal, cube, integer, oid, internal) RETURNS boolean
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/cube', 'g_cube_consistent';
-
-
---
--- Name: g_cube_decompress(internal); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION g_cube_decompress(internal) RETURNS internal
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/cube', 'g_cube_decompress';
-
-
---
--- Name: g_cube_penalty(internal, internal, internal); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION g_cube_penalty(internal, internal, internal) RETURNS internal
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/cube', 'g_cube_penalty';
-
-
---
--- Name: g_cube_picksplit(internal, internal); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION g_cube_picksplit(internal, internal) RETURNS internal
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/cube', 'g_cube_picksplit';
-
-
---
--- Name: g_cube_same(cube, cube, internal); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION g_cube_same(cube, cube, internal) RETURNS internal
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/cube', 'g_cube_same';
-
-
---
--- Name: g_cube_union(internal, internal); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION g_cube_union(internal, internal) RETURNS cube
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/cube', 'g_cube_union';
-
-
---
--- Name: gc_to_sec(double precision); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION gc_to_sec(double precision) RETURNS double precision
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT CASE WHEN $1 < 0 THEN 0::float8 WHEN $1/earth() > pi() THEN 2*earth() ELSE 2*earth()*sin($1/(2*earth())) END$_$;
-
-
---
--- Name: geo_distance(point, point); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION geo_distance(point, point) RETURNS double precision
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/earthdistance', 'geo_distance';
-
-
---
--- Name: latitude(earth); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION latitude(earth) RETURNS double precision
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT CASE WHEN cube_ll_coord($1, 3)/earth() < -1 THEN -90::float8 WHEN cube_ll_coord($1, 3)/earth() > 1 THEN 90::float8 ELSE degrees(asin(cube_ll_coord($1, 3)/earth())) END$_$;
-
-
---
--- Name: ll_to_earth(double precision, double precision); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION ll_to_earth(double precision, double precision) RETURNS earth
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT cube(cube(cube(earth()*cos(radians($1))*cos(radians($2))),earth()*cos(radians($1))*sin(radians($2))),earth()*sin(radians($1)))::earth$_$;
-
-
---
--- Name: longitude(earth); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION longitude(earth) RETURNS double precision
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT degrees(atan2(cube_ll_coord($1, 2), cube_ll_coord($1, 1)))$_$;
-
-
---
 -- Name: regexp_matches(citext, citext); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -792,15 +399,6 @@ CREATE FUNCTION replace(citext, citext, citext) RETURNS text
     AS $_$
     SELECT pg_catalog.regexp_replace( $1::pg_catalog.text, pg_catalog.regexp_replace($2::pg_catalog.text, '([^a-zA-Z_0-9])', E'\\\\\\1', 'g'), $3::pg_catalog.text, 'gi' );
 $_$;
-
-
---
--- Name: sec_to_gc(double precision); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION sec_to_gc(double precision) RETURNS double precision
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT CASE WHEN $1 < 0 THEN 0::float8 WHEN $1/(2*earth()) > 1 THEN pi()*earth() ELSE 2*earth()*asin($1/(2*earth())) END$_$;
 
 
 --
@@ -906,96 +504,6 @@ CREATE FUNCTION translate(citext, citext, text) RETURNS text
     AS $_$
     SELECT pg_catalog.translate( pg_catalog.translate( $1::pg_catalog.text, pg_catalog.lower($2::pg_catalog.text), $3), pg_catalog.upper($2::pg_catalog.text), $3);
 $_$;
-
-
---
--- Name: uuid_generate_v1(); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION uuid_generate_v1() RETURNS uuid
-    LANGUAGE c STRICT
-    AS '$libdir/uuid-ossp', 'uuid_generate_v1';
-
-
---
--- Name: uuid_generate_v1mc(); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION uuid_generate_v1mc() RETURNS uuid
-    LANGUAGE c STRICT
-    AS '$libdir/uuid-ossp', 'uuid_generate_v1mc';
-
-
---
--- Name: uuid_generate_v3(uuid, text); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION uuid_generate_v3(namespace uuid, name text) RETURNS uuid
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/uuid-ossp', 'uuid_generate_v3';
-
-
---
--- Name: uuid_generate_v4(); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION uuid_generate_v4() RETURNS uuid
-    LANGUAGE c STRICT
-    AS '$libdir/uuid-ossp', 'uuid_generate_v4';
-
-
---
--- Name: uuid_generate_v5(uuid, text); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION uuid_generate_v5(namespace uuid, name text) RETURNS uuid
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/uuid-ossp', 'uuid_generate_v5';
-
-
---
--- Name: uuid_nil(); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION uuid_nil() RETURNS uuid
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/uuid-ossp', 'uuid_nil';
-
-
---
--- Name: uuid_ns_dns(); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION uuid_ns_dns() RETURNS uuid
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/uuid-ossp', 'uuid_ns_dns';
-
-
---
--- Name: uuid_ns_oid(); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION uuid_ns_oid() RETURNS uuid
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/uuid-ossp', 'uuid_ns_oid';
-
-
---
--- Name: uuid_ns_url(); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION uuid_ns_url() RETURNS uuid
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/uuid-ossp', 'uuid_ns_url';
-
-
---
--- Name: uuid_ns_x500(); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION uuid_ns_x500() RETURNS uuid
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/uuid-ossp', 'uuid_ns_x500';
 
 
 --
@@ -1163,50 +671,6 @@ CREATE OPERATOR !~~* (
 
 
 --
--- Name: &&; Type: OPERATOR; Schema: public; Owner: -
---
-
-CREATE OPERATOR && (
-    PROCEDURE = cube_overlap,
-    LEFTARG = cube,
-    RIGHTARG = cube,
-    COMMUTATOR = &&,
-    RESTRICT = areasel,
-    JOIN = areajoinsel
-);
-
-
---
--- Name: <; Type: OPERATOR; Schema: public; Owner: -
---
-
-CREATE OPERATOR < (
-    PROCEDURE = cube_lt,
-    LEFTARG = cube,
-    RIGHTARG = cube,
-    COMMUTATOR = >,
-    NEGATOR = >=,
-    RESTRICT = scalarltsel,
-    JOIN = scalarltjoinsel
-);
-
-
---
--- Name: <=; Type: OPERATOR; Schema: public; Owner: -
---
-
-CREATE OPERATOR <= (
-    PROCEDURE = cube_le,
-    LEFTARG = cube,
-    RIGHTARG = cube,
-    COMMUTATOR = >=,
-    NEGATOR = >,
-    RESTRICT = scalarltsel,
-    JOIN = scalarltjoinsel
-);
-
-
---
 -- Name: <=; Type: OPERATOR; Schema: public; Owner: -
 --
 
@@ -1226,21 +690,6 @@ CREATE OPERATOR <= (
 --
 
 CREATE OPERATOR <> (
-    PROCEDURE = cube_ne,
-    LEFTARG = cube,
-    RIGHTARG = cube,
-    COMMUTATOR = <>,
-    NEGATOR = =,
-    RESTRICT = neqsel,
-    JOIN = neqjoinsel
-);
-
-
---
--- Name: <>; Type: OPERATOR; Schema: public; Owner: -
---
-
-CREATE OPERATOR <> (
     PROCEDURE = citext_ne,
     LEFTARG = citext,
     RIGHTARG = citext,
@@ -1248,48 +697,6 @@ CREATE OPERATOR <> (
     NEGATOR = =,
     RESTRICT = neqsel,
     JOIN = neqjoinsel
-);
-
-
---
--- Name: <@; Type: OPERATOR; Schema: public; Owner: -
---
-
-CREATE OPERATOR <@ (
-    PROCEDURE = cube_contained,
-    LEFTARG = cube,
-    RIGHTARG = cube,
-    COMMUTATOR = @>,
-    RESTRICT = contsel,
-    JOIN = contjoinsel
-);
-
-
---
--- Name: <@>; Type: OPERATOR; Schema: public; Owner: -
---
-
-CREATE OPERATOR <@> (
-    PROCEDURE = geo_distance,
-    LEFTARG = point,
-    RIGHTARG = point,
-    COMMUTATOR = <@>
-);
-
-
---
--- Name: =; Type: OPERATOR; Schema: public; Owner: -
---
-
-CREATE OPERATOR = (
-    PROCEDURE = cube_eq,
-    LEFTARG = cube,
-    RIGHTARG = cube,
-    COMMUTATOR = =,
-    NEGATOR = <>,
-    MERGES,
-    RESTRICT = eqsel,
-    JOIN = eqjoinsel
 );
 
 
@@ -1311,36 +718,6 @@ CREATE OPERATOR = (
 
 
 --
--- Name: >; Type: OPERATOR; Schema: public; Owner: -
---
-
-CREATE OPERATOR > (
-    PROCEDURE = cube_gt,
-    LEFTARG = cube,
-    RIGHTARG = cube,
-    COMMUTATOR = <,
-    NEGATOR = <=,
-    RESTRICT = scalargtsel,
-    JOIN = scalargtjoinsel
-);
-
-
---
--- Name: >=; Type: OPERATOR; Schema: public; Owner: -
---
-
-CREATE OPERATOR >= (
-    PROCEDURE = cube_ge,
-    LEFTARG = cube,
-    RIGHTARG = cube,
-    COMMUTATOR = <=,
-    NEGATOR = <,
-    RESTRICT = scalargtsel,
-    JOIN = scalargtjoinsel
-);
-
-
---
 -- Name: >=; Type: OPERATOR; Schema: public; Owner: -
 --
 
@@ -1352,48 +729,6 @@ CREATE OPERATOR >= (
     NEGATOR = <,
     RESTRICT = scalargtsel,
     JOIN = scalargtjoinsel
-);
-
-
---
--- Name: @; Type: OPERATOR; Schema: public; Owner: -
---
-
-CREATE OPERATOR @ (
-    PROCEDURE = cube_contains,
-    LEFTARG = cube,
-    RIGHTARG = cube,
-    COMMUTATOR = ~,
-    RESTRICT = contsel,
-    JOIN = contjoinsel
-);
-
-
---
--- Name: @>; Type: OPERATOR; Schema: public; Owner: -
---
-
-CREATE OPERATOR @> (
-    PROCEDURE = cube_contains,
-    LEFTARG = cube,
-    RIGHTARG = cube,
-    COMMUTATOR = <@,
-    RESTRICT = contsel,
-    JOIN = contjoinsel
-);
-
-
---
--- Name: ~; Type: OPERATOR; Schema: public; Owner: -
---
-
-CREATE OPERATOR ~ (
-    PROCEDURE = cube_contained,
-    LEFTARG = cube,
-    RIGHTARG = cube,
-    COMMUTATOR = @,
-    RESTRICT = contsel,
-    JOIN = contjoinsel
 );
 
 
@@ -1533,41 +868,6 @@ CREATE OPERATOR CLASS citext_ops
     FUNCTION 1 citext_hash(citext);
 
 
---
--- Name: cube_ops; Type: OPERATOR CLASS; Schema: public; Owner: -
---
-
-CREATE OPERATOR CLASS cube_ops
-    DEFAULT FOR TYPE cube USING btree AS
-    OPERATOR 1 <(cube,cube) ,
-    OPERATOR 2 <=(cube,cube) ,
-    OPERATOR 3 =(cube,cube) ,
-    OPERATOR 4 >=(cube,cube) ,
-    OPERATOR 5 >(cube,cube) ,
-    FUNCTION 1 cube_cmp(cube,cube);
-
-
---
--- Name: gist_cube_ops; Type: OPERATOR CLASS; Schema: public; Owner: -
---
-
-CREATE OPERATOR CLASS gist_cube_ops
-    DEFAULT FOR TYPE cube USING gist AS
-    OPERATOR 3 &&(cube,cube) ,
-    OPERATOR 6 =(cube,cube) ,
-    OPERATOR 7 @>(cube,cube) ,
-    OPERATOR 8 <@(cube,cube) ,
-    OPERATOR 13 @(cube,cube) ,
-    OPERATOR 14 ~(cube,cube) ,
-    FUNCTION 1 g_cube_consistent(internal,cube,integer,oid,internal) ,
-    FUNCTION 2 g_cube_union(internal,internal) ,
-    FUNCTION 3 g_cube_compress(internal) ,
-    FUNCTION 4 g_cube_decompress(internal) ,
-    FUNCTION 5 g_cube_penalty(internal,internal,internal) ,
-    FUNCTION 6 g_cube_picksplit(internal,internal) ,
-    FUNCTION 7 g_cube_same(cube,cube,internal);
-
-
 SET search_path = pg_catalog;
 
 --
@@ -1646,7 +946,7 @@ CREATE TABLE event (
     last_mod_user_id integer NOT NULL,
     last_mod_date timestamp with time zone DEFAULT now() NOT NULL
 );
-
+-- End table public.event
 
 --
 -- Name: event_event_id_seq; Type: SEQUENCE; Schema: public; Owner: -
@@ -1679,7 +979,7 @@ CREATE TABLE event_log (
     create_user_id integer NOT NULL,
     create_date timestamp with time zone DEFAULT now() NOT NULL
 );
-
+-- End table public.event_log
 
 --
 -- Name: event_log_event_log_id_seq; Type: SEQUENCE; Schema: public; Owner: -
@@ -1715,7 +1015,7 @@ CREATE TABLE event_question (
     create_user_id integer NOT NULL,
     create_date timestamp with time zone DEFAULT now() NOT NULL
 );
-
+-- End table public.event_question
 
 --
 -- Name: event_question_event_question_id_seq; Type: SEQUENCE; Schema: public; Owner: -
@@ -1746,7 +1046,19 @@ CREATE TABLE event_team (
     create_user_id integer NOT NULL,
     create_date timestamp with time zone DEFAULT now() NOT NULL
 );
+-- End table public.event_team
 
+--
+-- Name: event_user; Type: TABLE; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE TABLE event_user (
+    event_id integer NOT NULL,
+    user_id integer NOT NULL,
+    create_user_id integer NOT NULL,
+    create_date timestamp with time zone DEFAULT now() NOT NULL
+);
+-- End table public.event_user
 
 --
 -- Name: question; Type: TABLE; Schema: public; Owner: -; Tablespace:
@@ -1767,7 +1079,7 @@ CREATE TABLE question (
     last_mod_user_id integer NOT NULL,
     last_mod_date timestamp with time zone DEFAULT now() NOT NULL
 );
-
+-- End table public.question
 
 --
 -- Name: question_question_id_seq; Type: SEQUENCE; Schema: public; Owner: -
@@ -1797,7 +1109,7 @@ CREATE TABLE question_type (
     name citext NOT NULL,
     description text NOT NULL
 );
-
+-- End table public.question_type
 
 --
 -- Name: school; Type: TABLE; Schema: public; Owner: -; Tablespace:
@@ -1815,7 +1127,7 @@ CREATE TABLE school (
     last_mod_user_id integer NOT NULL,
     last_mod_date timestamp with time zone DEFAULT now() NOT NULL
 );
-
+-- End table public.school
 
 --
 -- Name: school_school_id_seq; Type: SEQUENCE; Schema: public; Owner: -
@@ -1845,7 +1157,7 @@ CREATE TABLE session (
     session_data text,
     expires integer
 );
-
+-- End table public.session
 
 --
 -- Name: slide; Type: TABLE; Schema: public; Owner: -; Tablespace:
@@ -1860,7 +1172,7 @@ CREATE TABLE slide (
     last_mod_user_id integer NOT NULL,
     last_mod_date timestamp with time zone DEFAULT now() NOT NULL
 );
-
+-- End table public.slide
 
 --
 -- Name: slide_slide_id_seq; Type: SEQUENCE; Schema: public; Owner: -
@@ -1897,7 +1209,7 @@ CREATE TABLE submission (
     last_mod_user_id integer NOT NULL,
     last_mod_date timestamp with time zone DEFAULT now() NOT NULL
 );
-
+-- End table public.submission
 
 --
 -- Name: submission_submission_id_seq; Type: SEQUENCE; Schema: public; Owner: -
@@ -1932,7 +1244,7 @@ CREATE TABLE team (
     last_mod_user_id integer NOT NULL,
     last_mod_date timestamp with time zone DEFAULT now() NOT NULL
 );
-
+-- End table public.team
 
 --
 -- Name: team_team_id_seq; Type: SEQUENCE; Schema: public; Owner: -
@@ -1971,7 +1283,7 @@ CREATE TABLE user_account (
     last_mod_user_id integer NOT NULL,
     last_mod_date timestamp with time zone DEFAULT now() NOT NULL
 );
-
+-- End table public.user_account
 
 --
 -- Name: user_account_user_id_seq; Type: SEQUENCE; Schema: public; Owner: -
@@ -2004,7 +1316,7 @@ CREATE TABLE user_login (
     create_user_id integer NOT NULL,
     create_date timestamp with time zone DEFAULT now() NOT NULL
 );
-
+-- End table public.user_login
 
 --
 -- Name: user_login_user_login_id_seq; Type: SEQUENCE; Schema: public; Owner: -
@@ -2125,6 +1437,14 @@ ALTER TABLE ONLY event_question
 
 ALTER TABLE ONLY event_team
     ADD CONSTRAINT event_team_pkey PRIMARY KEY (event_id, team_id);
+
+
+--
+-- Name: event_user_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+--
+
+ALTER TABLE ONLY event_user
+    ADD CONSTRAINT event_user_pkey PRIMARY KEY (event_id, user_id);
 
 
 --
@@ -2259,6 +1579,13 @@ CREATE INDEX event_team_idx_create_user_id ON event_team USING btree (create_use
 
 
 --
+-- Name: event_user_idx_create_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
+--
+
+CREATE INDEX event_user_idx_create_user_id ON event_user USING btree (create_user_id);
+
+
+--
 -- Name: question_idx_create_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
@@ -2378,7 +1705,7 @@ ALTER TABLE ONLY event_log
 --
 
 ALTER TABLE ONLY event_log
-    ADD CONSTRAINT event_log_event_id_fkey FOREIGN KEY (event_id) REFERENCES event(event_id) ON UPDATE CASCADE ON DELETE CASCADE DEFERRABLE;
+    ADD CONSTRAINT event_log_event_id_fkey FOREIGN KEY (event_id) REFERENCES event(event_id) ON UPDATE CASCADE DEFERRABLE;
 
 
 --
@@ -2394,7 +1721,7 @@ ALTER TABLE ONLY event_question
 --
 
 ALTER TABLE ONLY event_question
-    ADD CONSTRAINT event_question_event_id_fkey FOREIGN KEY (event_id) REFERENCES event(event_id) ON UPDATE CASCADE ON DELETE CASCADE DEFERRABLE;
+    ADD CONSTRAINT event_question_event_id_fkey FOREIGN KEY (event_id) REFERENCES event(event_id) ON UPDATE CASCADE DEFERRABLE;
 
 
 --
@@ -2418,7 +1745,7 @@ ALTER TABLE ONLY event_team
 --
 
 ALTER TABLE ONLY event_team
-    ADD CONSTRAINT event_team_event_id_fkey FOREIGN KEY (event_id) REFERENCES event(event_id) ON UPDATE CASCADE ON DELETE CASCADE DEFERRABLE;
+    ADD CONSTRAINT event_team_event_id_fkey FOREIGN KEY (event_id) REFERENCES event(event_id) ON UPDATE CASCADE DEFERRABLE;
 
 
 --
@@ -2427,6 +1754,30 @@ ALTER TABLE ONLY event_team
 
 ALTER TABLE ONLY event_team
     ADD CONSTRAINT event_team_team_id_fkey FOREIGN KEY (team_id) REFERENCES team(team_id) DEFERRABLE;
+
+
+--
+-- Name: event_user_create_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY event_user
+    ADD CONSTRAINT event_user_create_user_id_fkey FOREIGN KEY (create_user_id) REFERENCES user_account(user_id) DEFERRABLE;
+
+
+--
+-- Name: event_user_event_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY event_user
+    ADD CONSTRAINT event_user_event_id_fkey FOREIGN KEY (event_id) REFERENCES event(event_id) ON UPDATE CASCADE DEFERRABLE;
+
+
+--
+-- Name: event_user_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY event_user
+    ADD CONSTRAINT event_user_user_id_fkey FOREIGN KEY (user_id) REFERENCES user_account(user_id) ON UPDATE CASCADE DEFERRABLE;
 
 
 --
@@ -2450,7 +1801,7 @@ ALTER TABLE ONLY question
 --
 
 ALTER TABLE ONLY question
-    ADD CONSTRAINT question_question_type_value_fkey FOREIGN KEY (question_type_value) REFERENCES question_type(question_type_value) ON UPDATE CASCADE ON DELETE CASCADE DEFERRABLE;
+    ADD CONSTRAINT question_question_type_value_fkey FOREIGN KEY (question_type_value) REFERENCES question_type(question_type_value) ON UPDATE CASCADE DEFERRABLE;
 
 
 --
@@ -2490,7 +1841,7 @@ ALTER TABLE ONLY slide
 --
 
 ALTER TABLE ONLY submission
-    ADD CONSTRAINT submission_create_user_id_fkey FOREIGN KEY (create_user_id) REFERENCES user_account(user_id) ON UPDATE CASCADE ON DELETE CASCADE DEFERRABLE;
+    ADD CONSTRAINT submission_create_user_id_fkey FOREIGN KEY (create_user_id) REFERENCES user_account(user_id) ON UPDATE CASCADE DEFERRABLE;
 
 
 --
@@ -2498,7 +1849,7 @@ ALTER TABLE ONLY submission
 --
 
 ALTER TABLE ONLY submission
-    ADD CONSTRAINT submission_event_question_id_fkey FOREIGN KEY (event_question_id) REFERENCES event_question(event_question_id) ON UPDATE CASCADE ON DELETE CASCADE DEFERRABLE;
+    ADD CONSTRAINT submission_event_question_id_fkey FOREIGN KEY (event_question_id) REFERENCES event_question(event_question_id) ON UPDATE CASCADE DEFERRABLE;
 
 
 --
@@ -2530,7 +1881,7 @@ ALTER TABLE ONLY team
 --
 
 ALTER TABLE ONLY team
-    ADD CONSTRAINT team_school_id_fkey FOREIGN KEY (school_id) REFERENCES school(school_id) ON UPDATE CASCADE ON DELETE CASCADE DEFERRABLE;
+    ADD CONSTRAINT team_school_id_fkey FOREIGN KEY (school_id) REFERENCES school(school_id) ON UPDATE CASCADE DEFERRABLE;
 
 
 --
@@ -2562,7 +1913,7 @@ ALTER TABLE ONLY user_account
 --
 
 ALTER TABLE ONLY user_account
-    ADD CONSTRAINT user_account_team_id_fkey FOREIGN KEY (team_id) REFERENCES team(team_id) ON UPDATE CASCADE ON DELETE CASCADE DEFERRABLE;
+    ADD CONSTRAINT user_account_team_id_fkey FOREIGN KEY (team_id) REFERENCES team(team_id) ON UPDATE CASCADE DEFERRABLE;
 
 
 --
@@ -2570,7 +1921,7 @@ ALTER TABLE ONLY user_account
 --
 
 ALTER TABLE ONLY user_login
-    ADD CONSTRAINT user_login_create_user_id_fkey FOREIGN KEY (create_user_id) REFERENCES user_account(user_id) ON UPDATE CASCADE ON DELETE CASCADE DEFERRABLE;
+    ADD CONSTRAINT user_login_create_user_id_fkey FOREIGN KEY (create_user_id) REFERENCES user_account(user_id) ON UPDATE CASCADE DEFERRABLE;
 
 
 --

@@ -6,7 +6,56 @@ use Moose;
 use MooseX::NonMoose;
 extends 'QuizBowl::Schema::ResultSet';
 
+use Email::Sender::Simple qw(sendmail);
+use Email::Simple;
+use Email::Simple::Creator;
+use UUID::Tiny ':std';
+
 =head1 METHODS
+
+=head2 password_help
+
+=cut
+
+sub password_help {
+	my $self     = shift;
+	my $base_uri = shift;
+	my $address  = shift;
+
+	my $user = $self->search( { email => $address }, { rows => 1 } )->single();
+	die "Email not registered\n" unless defined $user;
+
+	my $token = create_uuid_as_string(UUID_V4);
+	$user->update( { password => $token } );
+
+	my $uri = $base_uri->clone();
+	$uri->query_form( { _k => $token } );
+
+	my $email = Email::Simple->create(
+		header => [
+			To      => $user->email_with_name,
+			From    => 'system@example.com',
+			Subject => 'Quiz Bowl Password Help',
+		],
+		body => sprintf( 'Reset password %s', $uri->as_string() ),
+	);
+
+	sendmail($email);
+}
+
+sub reset_password {
+	my $self = shift;
+	my $fd_r = shift;
+
+	die "Password is required\n" unless $fd_r->{password};
+
+	my $user = $self->search( { password => $fd_r->{_k} }, { rows => 1 } )->single();
+	die "User not found\n" unless defined $user;
+
+	$user->set_password( $fd_r->{password} )->update();
+
+	return $user;
+}
 
 =head2 find_by_session
 

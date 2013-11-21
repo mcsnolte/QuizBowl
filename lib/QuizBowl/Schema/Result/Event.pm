@@ -48,6 +48,13 @@ __PACKAGE__->has_many(
 
 __PACKAGE__->many_to_many( teams => 'registered_teams', 'team' );
 
+__PACKAGE__->has_many(
+	registered_players => 'QuizBowl::Schema::Result::EventUser',
+	{ 'foreign.event_id' => 'self.event_id', },
+);
+
+__PACKAGE__->many_to_many( players => 'registered_players', 'player' );
+
 sub save_questions {
 	my $self   = shift;
 	my $data_r = shift;

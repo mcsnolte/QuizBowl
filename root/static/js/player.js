@@ -1,25 +1,25 @@
 QuizBowl = {
-    player: {
-        session_id: undefined,
-        name: undefined,
-        socket: undefined,
-    }
+    session_id: undefined,
+    event_id: undefined,
+    name: undefined,
+    socket: undefined
 };
 
-function init_player(session_id){
+function init_player(args) {
 
-    QuizBowl.player.session_id = session_id;
+    QuizBowl.session_id = args.session_id;
+    QuizBowl.event_id = args.event_id;
     
     var socket = io.connect();
-    QuizBowl.player.socket = socket;
+    QuizBowl.socket = socket;
     
     _init_socketio(socket);
     
     _init_socket_events(socket);
     
-    socket.emit('register', session_id, function(res){
+    socket.emit('register', args.session_id, args.event_id, function(res){
         if (res.success) {
-            QuizBowl.player.name = res.name;
+            QuizBowl.name = res.name;
             $.growl('Welcome, ' + res.name + '!<br />You are connected.');
             // Resume a question that is in progress
             if (res.round_started) {
@@ -29,9 +29,9 @@ function init_player(session_id){
         else {
             socket.disconnect();
             $.growl('Registration failed, please login again.');
-            setTimeout(function(){
-                window.location.href = '/logout';
-            }, 1500);
+			setTimeout(function(){
+				window.location.href = '/logout';
+			}, 1500);
         }
     });
     
@@ -49,7 +49,7 @@ function _init_socketio(socket){
     
     socket.on('reconnect', function(){
         $.growl('Reconnected! Woohoo!');
-        socket.emit('register', QuizBowl.player.session_id);
+        socket.emit('register', QuizBowl.session_id, QuizBowl.event_id);
     });
     
     socket.on('reconnecting', function(){
@@ -67,6 +67,9 @@ function _init_socket_events(socket){
 		$('#waiting_panel').show();
 		$('#round_number').text('Roll Call');
 		$('#question_level').text('Press Ready');
+
+		var snd = new Audio("/static/audio/plane-low.mp3");
+		snd.play();
 	});
 	
     socket.on('user list updated', user_list_updated);
@@ -105,27 +108,37 @@ function user_list_updated(data){
         if (user.roll_call_ackd) {
             status.text('OK').addClass('ready');
         }
-        else 
+        else {
             if (user.connected) {
-                status.text('Waiting... ').addClass('waiting');
-                if (user.session_id == QuizBowl.player.session_id) {
+                if (user.session_id == QuizBowl.session_id) {
                     status.append($('<button>').attr('id', 'ack_roll_call').text('Ready'));
                 }
+				else {
+                	status.text('Waiting... ').addClass('waiting');
+				}
             }
             else {
                 status.text('Disconnected').addClass('disconnected');
             }
-        var tr = $('<tr>').append($('<td>').text(user.name), $('<td>').text(user.score), status);
+		}
+        var tr = $('<tr>').append(
+			$('<td>').append(
+				$('<img>').attr('src', user.gravatar_url)
+			),
+			$('<td>').text(user.name),
+			$('<td>').text(user.score),
+			status
+		);
         $('#roll_call tbody').append(tr);
     }
 }
 
 function round_started(data){
     $('#round_number').text('Round #' + data.round_number);
-	var grade = data.level_id == "team" ? "Team"
+	var level = data.level_id == "team" ? "Team"
 		: data.level_id == "practice" ? "Practice"
-		: "Grade " + data.level_id;
-    var level = grade + " Question";
+		: "Level " + data.level_id;
+    level += " Question";
     $('#question_level').text(level);
     
     $('#question_text').html(data.question);
@@ -151,18 +164,22 @@ function answer_submitted(data){
 }
 
 function results_revealed(data){
+	console.dir(data);
 	$('#round_number').text('Round #' + data.round_number + ' Results');
-    var grade = data.level_id == "team" ? "Team"
+    var level = data.level_id == "team" ? "Team"
 		: data.level_id == "practice" ? "Practice"
-		: "Grade " + data.level_id;
-    var level = grade + " Question";
+		: "Level " + data.level_id;
+    level += " Question";
     $('#question_level').text(level);
 	$('#results_message').html('<strong>Answer</strong><br/>' + data.question.answer);
 
 	$('#results_panel table').hide().find('tbody').empty();
 	for (var i in data.results) {
         var tr = $('<tr>').append(
-			$('<td>').text(data.results[i].team)
+			$('<td>').append(
+				$('<img>').attr('src', data.results[i].gravatar_url)
+			),
+			$('<td>').text(data.results[i].name)
 				.addClass(data.results[i].is_correct ? 'correct' : 'incorrect'),
 			$('<td>').text(seconds_display(data.results[i].time_to_answer)),
 			$('<td>').text(data.results[i].points)
@@ -187,6 +204,7 @@ function init_results_panel(msg) {
 
 function _init_page(socket){
     $('#question_panel').hide();
+    $('#results_panel').hide();
     
     $('#ack_roll_call').live('click', function(){
 		$('#question_level').text('Thank you');
@@ -198,7 +216,7 @@ function _init_page(socket){
 }
 
 function submit_answer(){
-    QuizBowl.player.socket.emit('submit answer', $('#answer_text').val());
+    QuizBowl.socket.emit('submit answer', $('#answer_text').val());
 	init_results_panel('Waiting for submissions...');
     return false;
 }

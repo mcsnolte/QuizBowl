@@ -6,6 +6,7 @@ use Moose;
 use MooseX::NonMoose;
 extends 'QuizBowl::Schema::Result';
 
+use Try::Tiny;
 use Crypt::SaltedHash;
 
 __PACKAGE__->table('user_account');
@@ -74,9 +75,24 @@ __PACKAGE__->has_many(
 	'create_user_id',
 );
 
+__PACKAGE__->has_many(
+	event_registrations => 'QuizBowl::Schema::Result::EventUser',
+	'user_id',
+);
+
+__PACKAGE__->many_to_many(
+	registered_events => 'event_registrations',
+	'player',
+);
+
 sub name {
 	my $self = shift;
 	return $self->first_name . ' ' . $self->last_name;
+}
+
+sub email_with_name {
+	my $self = shift;
+	return sprintf( '"%s" <%s>', $self->name, $self->email );
 }
 
 sub set_password {
@@ -87,17 +103,33 @@ sub set_password {
 	$pw->add($password);
 
 	$self->password( $pw->generate );
+
+	return $self;
 }
 
 around 'save' => sub {
 	my $orig = shift;
 	my $self = shift;
+	my $fd_r = shift;
 
-	my $password = delete $_[0]->{password};
-	$self->$orig(@_);
+	die "First name is required\n" unless $fd_r->{first_name};
+	die "Last name is required\n"  unless $fd_r->{last_name};
+	die "Email is required\n"      unless $fd_r->{email};
+	die "Password is required\n"   unless $fd_r->{password};
+
+	my $password = delete $fd_r->{password};
+
+	try {
+		$self->$orig($fd_r);
+	}
+	catch {
+		if ( $_ =~ m/duplicate key value violates unique constraint "unique_email"/ ) {
+			die "That email address is already taken\n";
+		}
+	};
 	if ( $password && $password ne '**********' ) {
 		$self->set_password($password);
-		$self->update();
+		$self->update_or_insert();
 	}
 	return $self;
 };
@@ -112,6 +144,23 @@ around 'REST_data' => sub {
 	$data_r->{'school'}   = $self->school ? $self->school->REST_data() : {};
 	return $data_r;
 };
+
+sub is_player_for {
+	my $self = shift;
+	my $event_id = shift // 0;
+
+	return $self->event_registrations->search( { 'me.event_id' => $event_id } )->count() > 0;
+}
+
+sub register_for {
+	my $self  = shift;
+	my $event = shift;
+
+	die('Event does not exist') unless defined $event;
+
+	my $registration = $self->event_registrations->find_or_create( { 'me.event_id' => $event->id, } );
+	return $registration;
+}
 
 __PACKAGE__->meta->make_immutable( inline_constructor => 0 );
 

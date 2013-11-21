@@ -4,7 +4,8 @@ package QuizBowl::Schema::Result;
 
 use Moose;
 use MooseX::NonMoose;
-extends 'DBIx::Class::Core';
+#extends 'DBIx::Class::Core';
+extends 'Cadillac::Schema::Result';
 
 __PACKAGE__->load_components(
 	qw/

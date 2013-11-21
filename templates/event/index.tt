@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+[% USE date %]
+[% title = 'Events' %]
+[% INCLUDE sub/head.tt %]
+
+  <body>
+
+[% INCLUDE sub/header.tt %]
+
+	<div class="page-header">
+		<h1>Events</h1>
+	</div>
+	[% total = events_rs.count %]
+	[% IF total > 0 %]
+	 <table class="table table-hover">
+	 	<thead>
+			<th>#</th>
+			<th>Name</th>
+			<th>Date</th>
+			<th>Actions</th>
+		</thead>
+		<tbody>
+			[% total = 0 %]
+			[% WHILE ( event = events_rs.next() ) %]
+			[% total = total + 1 %]
+			<tr>
+				<td>[% event.id %]</td>
+				<td>[% event.name %]</td>
+				<td>[% date.format(event.start_time, '%b %e %l:%S %p') || 'n/a' %]</td>
+				<td>
+					[% IF c.user_exists %]
+						[% IF c.user.is_admin %]
+						<a href="[% c.uri_for_action('/event/run', [event.id]) %]"
+						 class="btn btn-primary btn-sm" role="button">Run</a>
+						<a href="[% c.uri_for_action('/event/edit', [event.id]) %]"
+						 class="btn btn-default btn-sm" role="button">Edit</a>
+						[% END %]
+						[% IF c.user.is_player_for( event.id ) %]
+						<a href="[% c.uri_for_action('/event/play', [event.id]) %]"
+					 	class="btn btn-success btn-sm" role="button">Play</a>
+						[% ELSE %]
+						<a href="[% c.uri_for_action( '/event/register', [event.id] ) %]"
+						class="btn btn-warning btn-sm" role="button">Register</a>
+						[% END %]
+					[% END %]
+					<a href="[% c.uri_for_action('/event/watch', [event.id]) %]"
+					 class="btn btn-info btn-sm" role="button">Watch</a>
+				</td>
+			</tr>
+			[% END %]
+		</tbody>
+	 </table>
+	[% ELSE %]
+	<p><em>No events found</em></p>
+	[% END %]
+
+[% INCLUDE sub/footer.tt %]
+
+  </body>
+</html>
+
+

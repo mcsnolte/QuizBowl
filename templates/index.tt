@@ -1,20 +1,48 @@
 <!DOCTYPE html>
-<html>
-	<head>
-		<link href="/css/style.css" rel="stylesheet">
-		<script src="http://code.jquery.com/jquery-1.6.1.min.js">
-		</script>
-	</head>
-	<body>
-	[% IF c.user -%]
-		[% IF c.user.is_admin %]
-		<a href="/admin">Admin</a>
-		[% ELSE %]
-		<a href="/player">Player</a>
-		[% END %]
-		| <a href="/logout">Logout</a>
-	[% ELSE %]
-		<a href="/login">Login</a>
-	[% END %]
-	</body>
+<html lang="en">
+
+[% INCLUDE sub/head.tt %]
+
+  <body>
+[% INCLUDE sub/header.tt %]
+
+      <div class="jumbotron">
+        <h1>Are you ready?</h1>
+        <p class="lead">Compete head to head in a simulatneous, multi-player competition that decides once and for all who really is the smartest one of all... is it you?</p>
+        [% IF !c.user -%]
+        <p><a class="btn btn-lg btn-success" href="[% c.uri_for_action('/signup') %]" role="button">Sign up now</a></p>
+        [% ELSE %]
+        <p><a class="btn btn-lg btn-success" href="[% c.uri_for_action('/event/index') %]" role="button">Get started</a></p>
+        [% END %]
+      </div>
+
+      <div class="row marketing">
+        <div class="col-lg-6">
+          <h4>Multi-player</h4>
+          <p>Get some real competition and play against others simultaneously</p>
+
+          <h4>Online</h4>
+          <p>Nothing to install, your already ready to play</p>
+
+          <h4>Responsive</h4>
+          <p>Using real-time web communication keeps you playing instead of waiting</p>
+        </div>
+
+        <div class="col-lg-6">
+          <h4>Full Control</h4>
+          <p>Run your tournament the way you want and command everyone's attention</p>
+
+          <h4>Audience Friendly</h4>
+          <p>Got a crowd? Then put up a projector and let them watch every play</p>
+
+          <h4>Free</h4>
+          <p>Nuff said</p>
+        </div>
+      </div>
+
+[% INCLUDE sub/footer.tt %]
+
+  </body>
 </html>
+
+

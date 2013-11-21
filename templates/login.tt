@@ -1,28 +1,26 @@
 <!DOCTYPE html>
-<html>
-	<head>
-		<title>QuizBowl Login</title>
-		<script src="http://code.jquery.com/jquery-1.6.1.min.js">
-		</script>
-		<script src="/js/growl.js">
-		</script>
-		<link href="/css/growl.css" rel="stylesheet">
-		<script>
-		[% IF login_fail %]
-			$(document).ready(function(){
-				$.growl('Wrong Username or password.');
-			});
-		[% END %]
-		</script>
-		<link href="/css/style.css" rel="stylesheet">
-	</head>
-	<body>
-		<h1>QuizBowl Login</h1>
-	<form method="post">
-	Email: <input type="text" name="email" /><br />
-	Password: <input type="password" name="password" /><br />
-	<input type="submit" />
-	</form>
-	<small>[% c.model('DB::User').search_rs({is_admin=>0}).get_column('email').all.join('<br >') %]</small>
-	</body>
+<html lang="en">
+
+[% title = 'Login' %]
+[% INCLUDE sub/head.tt %]
+
+  <body>
+
+[% INCLUDE sub/header.tt %]
+
+      <form class="form-signin" method="post">
+        <h2 class="form-signin-heading">Login</h2>
+        <input type="text" name="email" class="form-control" placeholder="Email address" value="[% c.req.param('email') | html %]" required autofocus>
+        <input type="password" name="password" class="form-control" placeholder="Password" required>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+	  <p>
+	    <a href="[% c.uri_for('/signup', { 'email' => c.req.param('email') } ) | html %]">Register now</a> or
+	    <a href="[% c.uri_for('/forgot', { 'email' => c.req.param('email') } ) | html %]">get password help</a>.
+	  </p>
+      </form>
+
+[% INCLUDE sub/footer.tt %]
+
+  </body>
 </html>
+

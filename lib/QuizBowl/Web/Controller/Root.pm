@@ -5,6 +5,8 @@ package QuizBowl::Web::Controller::Root;
 use Moose;
 use namespace::autoclean;
 
+use Try::Tiny;
+
 BEGIN { extends 'Catalyst::Controller' }
 
 #
@@ -23,6 +25,104 @@ sub auto : Private() {
 
 sub index : Path : Args(0) {
 	my ( $self, $c ) = @_;
+}
+
+sub signup : Local : Args(0) {
+	my ( $self, $c ) = @_;
+
+	if ( $c->req->method eq 'POST' ) {
+		my $email = $c->req->param('email');
+		my $pass  = $c->req->param('password');
+
+		my $user = try {
+			return $c->model('DB::User')->new_result( {} )->save( $c->req->params );
+		}
+		catch {
+			$c->stash( { error => $_ } );
+			return undef;
+		};
+
+		if ( defined $user ) {
+			$c->authenticate(
+				{
+					password   => $pass,
+					dbix_class => {
+						searchargs => [    #
+							{ email => $email, }
+						]
+					}
+				}
+			);
+			my $login = $c->user->add_to_logins(
+				{
+					login_ip   => $c->req->address,
+					session_id => $c->sessionid,
+					user_agent => $c->req->user_agent,
+				}
+			);
+			$c->res->redirect( $c->uri_for('/profile') );
+		}
+		elsif ( !$c->stash->{error} ) {
+			$c->stash( { 'error' => 'Please try again' } );
+		}
+	}
+}
+
+sub profile : Local {
+	my ( $self, $c ) = @_;
+	$c->res->redirect('/') unless $c->user_exists;
+	if ( $c->req->method eq 'POST' ) {
+		$c->user->save( $c->req->params );
+		$c->res->redirect( $c->uri_for( '/profile', { _t => time } ) );
+	}
+	else {
+		$c->stash( { user => $c->user->REST_data } );
+	}
+}
+
+sub forgot : Local {
+	my ( $self, $c ) = @_;
+	if ( $c->req->method eq 'POST' ) {
+		my $email = $c->req->param('email');
+		try {
+			$c->model('DB::User')->password_help( $c->uri_for('/reset'), $email );
+			$c->res->redirect( $c->uri_for( '/forgot', { sent => 1, _t => time } ) );
+		}
+		catch {
+			$c->stash( { error => "$_" } );
+		};
+	}
+}
+
+sub reset : Local {
+	my ( $self, $c ) = @_;
+	if ( $c->req->method eq 'POST' ) {
+		my $pass = $c->req->param('password');
+		try {
+			my $user = $c->model('DB::User')->reset_password( $c->req->params );
+			$c->authenticate(
+				{
+					password   => $pass,
+					dbix_class => {
+						searchargs => [    #
+							{ email => $user->email, }
+						]
+					}
+				}
+			);
+			my $login = $c->user->add_to_logins(
+				{
+					login_ip   => $c->req->address,
+					session_id => $c->sessionid,
+					user_agent => $c->req->user_agent,
+				}
+			);
+			$c->res->redirect( $c->uri_for( '/profile', { reset => 1 } ) );
+		}
+		catch {
+			$c->stash( { error => $_ } );
+		};
+	}
 }
 
 sub login : Local {
@@ -47,7 +147,7 @@ sub login : Local {
 		$c->res->redirect('/');
 	}
 	elsif ( $c->req->method eq 'POST' ) {
-		$c->stash( { 'login_fail' => 1 } );
+		$c->stash( { 'error' => 'Wrong username or password' } );
 	}
 }
 
@@ -67,19 +167,9 @@ sub presenter : Local {
 	my ( $self, $c ) = @_;
 }
 
-sub admin : Local {
+sub question : Local {
 	my ( $self, $c ) = @_;
 	$c->res->redirect('/') unless $c->user_exists && $c->user->is_admin;
-}
-
-sub question : Local {
-       my ( $self, $c ) = @_;
-       $c->res->redirect('/') unless $c->user_exists && $c->user->is_admin;
-}
-
-sub event : Local {
-       my ( $self, $c ) = @_;
-       $c->res->redirect('/') unless $c->user_exists && $c->user->is_admin;
 }
 
 sub bad_request : Private {

@@ -20,6 +20,13 @@
 		</script>
 		<script src="/static/js/presenter.js">
 		</script>
+		<script>
+			$(document).ready(function(){
+				init_presenter({
+					"event_id": "[% event.id %]"
+				});
+			});
+		</script>
 		<link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
 		<link href="/static/css/growl.css" rel="stylesheet">
 		<link href="/static/css/presenter.css" rel="stylesheet">
@@ -29,11 +36,12 @@
 			<h1>Score Board</h1>
 			<div id="scores">
 				<table>
-					<col width="40%" /><col width="20%" /><col width="40%" />
+					<col width="10%" /><col width="40%" /><col width="10%" /><col width="40%" />
 					<thead>
 						<tr>
+							<th></th>
 							<th>
-								School
+								Name
 							</th>
 							<th>
 								Score
@@ -91,11 +99,12 @@
 					</tbody>
 				</table>
 				<table id="points">
-					<col width="40%" /><col width="20%" /><col width="40%" />
+					<col width="10%" /><col width="40%" /><col width="10%" /><col width="40%" />
 					<thead>
 						<tr>
+							<th></th>
 							<th>
-								School
+								Name
 							</th>
 							<th class="time">
 								Time

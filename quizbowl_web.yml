@@ -1,10 +1,24 @@
 name: "QuizBowl::Web"
 
+cadillac:
+  global:
+    app: QuizBowl::Web
+    schema_class: QuizBowl::Schema
+    connection_info:
+      - dbi:Pg:dbname=quizbowl
+      - ~
+      - ~
+    db_extensions:
+      - citext
+    logconf: log4perl.conf
+  repl:
+    dbic_trace: 1
+
 "Model::DB":
   connect_info:
     dsn: "dbi:Pg:dbname=quizbowl"
-    user: 
-    password: 
+    user: ~
+    password: ~
     AutoCommit: 1
 
 "Plugin::Authentication":

@@ -1,0 +1,94 @@
+---
+requires:
+  - User.yml
+  - QuestionType.yml
+data:
+  1:
+    question: '$\frac{5075}{25}=$'
+    points: 1
+    answer: 203
+    answer_value: 203
+    explanation: ~
+    question_type_value: text
+    level_id: 1
+  2:
+    question: |
+      @stuff = qw(foo bar);<br/>
+      print scalar @stuff;
+    points: 1
+    answer: 2
+    answer_value: 4
+    explanation: ~
+    question_type_value: text
+    level_id: 1
+  3:
+    question: |
+      Count the f's in this passage:<br/>
+      <blockquote>
+        FINISHED FILES ARE THE<br/>
+        RESULT OF YEARS OF SCIENTIFIC<br/>
+        STUDY COMBINED WITH THE<br/>
+        EXPERIENCE OF YEARS<br/>
+      </blockquote>
+    points: 1
+    answer: 6
+    answer_value: 6
+    explanation: ~
+    question_type_value: text
+    level_id: 1
+  4:
+    question: 'What birthday did Perl celebrate at YAPC::NA 2013?'
+    points: 2
+    answer: 25
+    answer_value: 25
+    explanation: ~
+    question_type_value: text
+    level_id: 2
+  5:
+    question: 'What is π (pi) down to 5 decimal places?'
+    points: 2
+    answer: 3.14159
+    answer_value: 3.14159
+    explanation: ~
+    question_type_value: text
+    level_id: 2
+  6:
+    question: |
+      @ar1 = qw(foo bar);<br/>
+      @ar2 = qw(a b c d);<br/>
+      print scalar (@ar1, @ar2);
+    points: 2
+    answer: 4
+    answer_value: 4
+    explanation: ~
+    question_type_value: text
+    level_id: 2
+  7:
+    question: "$2^2-2^3[2^2(3-2^2)+2^2(3-1)]=$"
+    points: 3
+    answer: -28
+    answer_value: -28
+    explanation: ~
+    question_type_value: text
+    level_id: 3
+  8:
+    question: 'What is the sum of all of the numbers from 1 to 1000?'
+    points: 3
+    answer: 500,500
+    answer_value: 500500
+    explanation: ~
+    question_type_value: text
+    level_id: 3
+  9:
+    question: |
+      What is the next number in this series?<br/>
+      5, 25, 61, 113, 181
+    points: 3
+    answer: 265
+    answer_value: 265
+    explanation: ~
+    question_type_value: text
+    level_id: 3
+
+
+
