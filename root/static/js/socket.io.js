@@ -1763,6 +1763,7 @@ var io = ('undefined' === typeof module ? {} : module.exports);
    */
 
   Socket.prototype.setHeartbeatTimeout = function () {
+	  return;
     clearTimeout(this.heartbeatTimeoutTimer);
     if(this.transport && !this.transport.heartbeats()) return;
 
