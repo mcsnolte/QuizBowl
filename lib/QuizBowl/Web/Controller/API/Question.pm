@@ -2,6 +2,7 @@ package QuizBowl::Web::Controller::API::Question;
 
 # ABSTRACT: Endpoints for Question
 
+use utf8;
 use Moose;
 use namespace::autoclean;
 

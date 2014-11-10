@@ -2,6 +2,7 @@ package QuizBowl::Schema::ResultSet::Event;
 
 # ABSTRACT: Set of Events
 
+use utf8;
 use Moose;
 use MooseX::NonMoose;
 extends 'QuizBowl::Schema::ResultSet';

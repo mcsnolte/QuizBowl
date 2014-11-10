@@ -2,6 +2,7 @@ package QuizBowl::Web::Controller::API::School;
 
 # ABSTRACT: Endpoints for School
 
+use utf8;
 use Moose;
 use namespace::autoclean;
 

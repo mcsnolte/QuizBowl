@@ -2,6 +2,7 @@ package QuizBowl::Web::Controller::API::Team;
 
 # ABSTRACT: Endpoints for Team
 
+use utf8;
 use Moose;
 use namespace::autoclean;
 

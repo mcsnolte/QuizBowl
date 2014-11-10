@@ -2,6 +2,7 @@ package QuizBowl::Web::Controller::Event;
 
 # ABSTRACT: Controller for Events
 
+use utf8;
 use Moose;
 use namespace::autoclean;
 

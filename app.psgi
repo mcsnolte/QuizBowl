@@ -1,4 +1,6 @@
+#!/usr/bin/env perl
 
+use utf8;
 use lib "lib";
 use QuizBowl::Web;
 use QuizBowl::SocketIO;

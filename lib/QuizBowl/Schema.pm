@@ -2,6 +2,7 @@ package QuizBowl::Schema;
 
 # ABSTRACT: DB schema for math quiz bowl
 
+use utf8;
 use Moose;
 use MooseX::NonMoose;
 #extends 'DBIx::Class::Schema';

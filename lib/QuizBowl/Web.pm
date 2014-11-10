@@ -2,6 +2,7 @@ package QuizBowl::Web;
 
 # ABSTRACT: Quiz Bowl web server
 
+use utf8;
 use Moose;
 use namespace::autoclean;
 
@@ -41,7 +42,8 @@ extends 'Catalyst';
 # local deployment.
 
 __PACKAGE__->config(
-	name => 'QuizBowl::Web',
+	name     => 'QuizBowl::Web',
+	encoding => 'UTF-8',
 
 	# Disable deprecated behavior needed by old applications
 	disable_component_resolution_regex_fallback => 1,

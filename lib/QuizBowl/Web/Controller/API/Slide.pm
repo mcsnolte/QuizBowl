@@ -2,6 +2,7 @@ package QuizBowl::Web::Controller::API::Slide;
 
 # ABSTRACT: Endpoints for Slide
 
+use utf8;
 use Moose;
 use namespace::autoclean;
 

@@ -2,7 +2,7 @@ package QuizBowl::Config;
 
 # ABSTRACT: Singleton for accessing QuizBowl (Web) config
 
-
+use utf8;
 use Moose;
 use MooseX::ClassAttribute;
 use Config::JFDI;

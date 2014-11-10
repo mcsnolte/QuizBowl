@@ -2,6 +2,7 @@ package QuizBowl::Web::Controller::REST;
 
 # ABSTRACT: Base REST Controller
 
+use utf8;
 use Moose;
 use namespace::autoclean;
 BEGIN { extends 'Catalyst::Controller::REST' }

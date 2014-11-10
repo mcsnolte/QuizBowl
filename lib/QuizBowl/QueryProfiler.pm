@@ -4,6 +4,7 @@ package QuizBowl::QueryProfiler;
 
 use strict;
 use warnings;
+use utf8;
 use parent 'DBIx::Class::Storage::Statistics';
 
 use Time::HiRes qw(time);

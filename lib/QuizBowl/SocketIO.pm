@@ -2,13 +2,13 @@ package QuizBowl::SocketIO;
 
 # ABSTRACT: SocketIO app
 
+use utf8;
 use Moose;
 use MooseX::ClassAttribute;
 
 use QuizBowl::Core;
 use JSON;
 use Gravatar::URL;
-use Data::Show;
 
 class_has 'events' => (
 	is      => 'rw',

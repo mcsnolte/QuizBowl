@@ -2,6 +2,7 @@ package QuizBowl::Web::Controller::Preview;
 
 # ABSTRACT: Preview controller
 
+use utf8;
 use Moose;
 use namespace::autoclean;
 

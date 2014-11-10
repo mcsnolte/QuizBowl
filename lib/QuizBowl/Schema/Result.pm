@@ -2,6 +2,7 @@ package QuizBowl::Schema::Result;
 
 # ABSTRACT: Result base class
 
+use utf8;
 use Moose;
 use MooseX::NonMoose;
 #extends 'DBIx::Class::Core';

@@ -4,6 +4,7 @@ package QuizBowl::Schema::ResultSet;
 
 use strict;
 use warnings;
+use utf8;
 use base 'DBIx::Class::ResultSet';
 
 =head1 METHODS

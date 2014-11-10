@@ -2,6 +2,7 @@ package QuizBowl::Web::Controller::Root;
 
 # ABSTRACT: Root Controller for QuizBowl::Web
 
+use utf8;
 use Moose;
 use namespace::autoclean;
 
