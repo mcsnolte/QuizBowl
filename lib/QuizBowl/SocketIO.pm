@@ -571,7 +571,7 @@ sub disconnect {
 					my $users_r = QuizBowl::SocketIO->events->{$event_id}->{users};
 					$users_r->{$user_id}->{connected}      = 0;
 					$users_r->{$user_id}->{roll_call_ackd} = 0;
-					$self->broadcast->to($event_id)->emit( 'growl', $users_r->{$user_id}->{name} . ' disconnected' );
+					$self->broadcast->to($event_id)->emit( 'growl', $users_r->{$user_id}->{name}||'Someone' . ' disconnected' );
 					emit_user_list($self);
 
 					log_event(
