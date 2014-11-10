@@ -28,6 +28,7 @@ use Catalyst qw/
   Session::State::Cookie
   Session::Store::DBIC
   Authentication
+  SmartURI
   /;
 
 extends 'Catalyst';

@@ -5,6 +5,11 @@
 		</script>
 		<script src="/socket.io/socket.io.js">
 		</script>
+
+		<link href="http://highlightjs.org/static/styles/github.css" rel="stylesheet">
+		<script src="http://highlightjs.org/static/highlight.pack.js">
+		</script>
+
 		<script src="/static/js/growl.js">
 		</script>
 		<script type="text/javascript" src= "http://cdn.mathjax.org/mathjax/latest/MathJax.js">

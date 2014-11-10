@@ -500,7 +500,7 @@ function init_admin(args){
     socket.on('user list updated', user_list_updated);
 
 	socket.on('disconnect', function(){
-		console.log('diconnected at ' + new Date());
+		console.log('disconnected at ' + new Date());
     	Ext.getCmp('basic-statusbar').setStatus({
             text: 'Disconnected',
             iconCls: 'x-status-error'

@@ -18,6 +18,11 @@ sub setup_base : Chained('/') PathPart('api/question') CaptureArgs(0) {
 	my $self = shift;
 	my $c    = shift;
 
+	if ( !$c->user_exists || !$c->user->is_admin ){
+		$c->res->redirect('/');
+		$c->detach();
+	}
+
 	$c->stash->{'questions_rs'} = $c->model('DB::Question');
 }
 

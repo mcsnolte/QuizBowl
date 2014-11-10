@@ -60,6 +60,9 @@ function round_started(data){
 
     // Redraw equations
     MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+
+	// Redraw code
+	$('pre code').each(function(i, e) {hljs.highlightBlock(e)});
 }
 
 function answer_submitted(data){

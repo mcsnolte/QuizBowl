@@ -1,5 +1,8 @@
 name: "QuizBowl::Web"
 
+Plugin::SmartURI:
+  disposition: relative
+
 cadillac:
   global:
     app: QuizBowl::Web

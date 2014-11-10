@@ -35,6 +35,11 @@ builder {
 	  Plack::App::File->new( file => "$root/swf/WebSocketMainInsecure.swf" );
 
 	mount '/socket.io' => builder {
-		PocketIO->new( instance => QuizBowl::SocketIO->new(), method => 'run' );
+		PocketIO->new(
+			instance => QuizBowl::SocketIO->new(),
+
+			# Can add socketio options here
+			# socketio => { heartbeat_timeout => 5 },
+		);
 	};
 };
