@@ -5,8 +5,7 @@ package QuizBowl::Schema::Result;
 use utf8;
 use Moose;
 use MooseX::NonMoose;
-#extends 'DBIx::Class::Core';
-extends 'Cadillac::Schema::Result';
+extends 'DBIx::Class::Core';
 
 __PACKAGE__->load_components(
 	qw/

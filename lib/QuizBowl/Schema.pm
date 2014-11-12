@@ -5,8 +5,7 @@ package QuizBowl::Schema;
 use utf8;
 use Moose;
 use MooseX::NonMoose;
-#extends 'DBIx::Class::Schema';
-extends 'Cadillac::Schema';
+extends 'DBIx::Class::Schema';
 
 use QuizBowl::QueryProfiler;
 use QuizBowl::Config;
