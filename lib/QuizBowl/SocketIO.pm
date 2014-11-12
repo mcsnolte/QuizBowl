@@ -36,10 +36,10 @@ sub _prep_event {
 	my $event_r = {
 		event          => $event,
 		users          => _build_users($event),
-		users_by_score => _set_scores($event),
 		event_question => _build_event_question($event),
 	};
 	QuizBowl::SocketIO->events->{ $event->id } = $event_r;
+	_set_scores($event);
 	return $event_r;
 }
 
@@ -87,7 +87,10 @@ sub _set_scores {
 		QuizBowl::SocketIO->events->{ $event->id }->{users}->{ $user->{'user_id'} }->{score} =
 		  $scores_for_user{ $user->{user_id} } // 0;
 	}
-	return \@users;
+
+	QuizBowl::SocketIO->events->{ $event->id }->{users_by_score} = \@users;
+
+	return;
 }
 
 # Set to last started, but not yet closed, question (if any)
@@ -231,7 +234,7 @@ sub register {
 		$cb->( { success => 0 } );
 	}
 
-	#_set_scores($event);
+	_set_scores($event);
 	emit_user_list($self);
 }
 
