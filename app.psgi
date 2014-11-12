@@ -26,7 +26,7 @@ builder {
 		QuizBowl::Web->psgi_app(@_);
 	};
 
-	mount '/socket.io/socket.io.js' => Plack::App::File->new( file => "$root/static/js/socket.io.js" );
+	mount '/socket.io/socket.io.js' => Plack::App::File->new( file => "$root/static/js/socket.io.js" )->to_app();
 
 	mount '/socket.io/static/flashsocket/WebSocketMain.swf' =>
 	  Plack::App::File->new( file => "$root/swf/WebSocketMain.swf" );
